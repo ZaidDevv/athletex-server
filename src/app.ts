@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from 'dotenv';
+import { JWT_SECRET } from "./settings";
 
 dotenv.config();
 

@@ -1,16 +1,12 @@
 import express from 'express';
-import { AUTH_PATH } from '../settings';
+import { AuthController } from '../controller/auth_controller';
 
 const AuthRouter = express.Router();
 
 // Login route
-AuthRouter.post(`/login`, (req, res) => {
-    // Handle login logic here
-});
+AuthRouter.post(`/login`, AuthController.login);
 
-// Register route
-AuthRouter.post(`/register`, (req, res) => {
-    // Handle register logic here
-});
+// Registration route
+AuthRouter.post(`/register`, AuthController.register);
 
 export default AuthRouter;

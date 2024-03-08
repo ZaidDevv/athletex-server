@@ -1,12 +1,14 @@
 import { Schema, model, Document } from 'mongoose';
+import { IExercise } from './exercise';
 
 export interface IWorkout extends Document {
     duration: number;
     categories: [string];
     description: string;
+    exercises: [IExercise];
 }
 
-enum ExerciseCategory {
+export enum ExerciseCategory {
     SHOOTING = 'Shooting',
     DRIBBLING = 'Dribbling',
     DEFENDING = 'Defending',
@@ -32,7 +34,12 @@ const workoutSchema = new Schema<IWorkout>({
         type: [String],
         enum: Object.values(ExerciseCategory),
         required: true,
-    }
+    },
+    exercises: {
+        type: [Schema.Types.ObjectId],
+        ref: 'Exercise',
+        required: true,
+    },
 });
 
 const Workout = model<IWorkout>('Workout', workoutSchema);

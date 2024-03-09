@@ -9,4 +9,8 @@ AuthRouter.post(`/login`, AuthController.login);
 // Registration route
 AuthRouter.post(`/register`, AuthController.register);
 
+// Refresh token route
+AuthRouter.post(`/refresh`, AuthController.refreshToken);
+
+
 export default AuthRouter;

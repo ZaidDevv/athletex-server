@@ -1,10 +1,14 @@
+import { Router } from 'express';
 import fs from 'fs';
 import morgan from 'morgan';
 import path from 'path';
-import app from '../app';
 
-// create a write stream (in append mode)
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'general.log'), { flags: 'a' });
+const morganRouter = Router();
 
-// setup the logger
-app.use(morgan('combined', { stream: accessLogStream }));
+const accessLogStream = fs.createWriteStream(path.join(__dirname, '../../access.log'), { flags: 'a' });
+
+morganRouter.use(morgan('common', { stream: accessLogStream }));
+
+morganRouter.use(morgan('dev'));
+
+export default morganRouter;

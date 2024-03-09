@@ -1,9 +1,17 @@
 import { Router } from 'express';
 import { AUTH_PATH, WORKOUT_RESOURCE } from '../settings';
-import app from '../app';
 import AuthRouter from './auth_router';
 import WorkoutRouter from './workout_router';
+import authenticated from '../middleware/middleware';
 
-app.use(AUTH_PATH, AuthRouter);
+// Create a new router
+const router = Router();
 
-app.use(WORKOUT_RESOURCE, WorkoutRouter);
+router.use(AUTH_PATH, AuthRouter);
+
+// use protected routes with authenticated middleware
+router.use(authenticated);
+
+router.use(WORKOUT_RESOURCE, WorkoutRouter);
+
+export default router;

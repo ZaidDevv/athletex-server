@@ -1,11 +1,13 @@
 
 import express, { Request, Response, NextFunction } from 'express';
-import app from '../app';
+import jwt from 'jsonwebtoken';
+import { IResponseSchema, JWT_SECRET, ResponseStatus } from '../settings';
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const middlewareRouter = express.Router();
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+middlewareRouter.use(express.json());
+
+middlewareRouter.use((req: Request, res: Response, next: NextFunction) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -13,21 +15,40 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Middleware to check if the request is authenticated
-const authenticated = app.use((req: Request, res: Response, next: NextFunction) => {
-    // Add your authentication logic here
-    // For example, you can check if the request contains a valid JWT token
-
-    // If the request is authenticated, call `next()` to proceed to the next middleware
-    // If the request is not authenticated, return an error response
+export const authenticated = ((req: Request, res: Response, next: NextFunction) => {
+    let response: IResponseSchema;
     if (req.headers.authorization) {
-        // Your authentication logic here
-        // Example: verify JWT token
-        // If the token is valid, call `next()`
-        // If the token is invalid, return an error response
-        next();
-    } else {
-        res.status(401).json({ error: 'Unauthorized' });
+        try {
+            const token = req.headers.authorization.split(' ')[1];
+            // verify the token
+            const verified = jwt.verify(token, JWT_SECRET);
+
+            if (!verified) {
+                response = {
+                    status: ResponseStatus.FAIL,
+                    message: 'Unauthorized, Token is invalid or has expired!',
+                };
+                res.status(401).json(response);
+                return;
+            }
+
+            next();
+        }
+        catch (e) {
+            response = {
+                status: ResponseStatus.ERROR,
+                message: 'Unauthorized, Token is invalid or has expired!',
+            };
+            res.status(401).json(response);
+        }
+    }
+    else {
+        response = {
+            status: ResponseStatus.FAIL,
+            message: 'Unauthorized, Token is required!',
+        };
+        res.status(401).json(response);
     }
 });
 
-export default authenticated;
+export default middlewareRouter;

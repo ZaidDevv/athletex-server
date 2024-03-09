@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const BASE_PREFIX = "/api";
+const BASE_PREFIX = "/api/v1";
 
 export const AUTH_PATH = `${BASE_PREFIX}/auth`;
 
@@ -12,11 +12,15 @@ export const USER_RESOURCE = `${BASE_PREFIX}/user`;
 
 export const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017';
 
+export const DATABASE_NAME = process.env.DATABASE_NAME || 'athletex';
+
 export const PORT = process.env.PORT || 3000;
 
 export const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export const JWT_EXPIRATION = Number(process.env.JWT_EXPIRATION) || 7200 as number; // 1 hour default
+export const JWT_ACCESS_EXPIRATION = process.env.JWT_ACCESS_EXPIRATION || '2d';
+
+export const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION || '20d';
 
 export const EXERCISE_COLLECTION = 'exercises';
 
@@ -28,6 +32,7 @@ export interface IResponseSchema {
     data?: any;
     message?: string;
 }
+
 export enum ResponseStatus {
     SUCCESS = "success",
     ERROR = "error",

@@ -13,7 +13,7 @@ Welcome to Athletex Server! This server is designed to support the front-end app
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/username/repo.git
+    git clone https://github.com/ZaidDevv/athletex-serve.git
     ```
 
 2. Install the dependencies:

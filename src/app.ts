@@ -5,7 +5,7 @@ import router from "./route/router";
 import middlewareRouter from "./middleware/middleware";
 import morganRouter from "./middleware/morgan";
 import connectToDatabase from "./driver/mongodb";
-import { IResponseSchema, ResponseStatus } from "./settings";
+import { IResponseSchema, PORT, ResponseStatus } from "./settings";
 import rateLimiterRouter from "./middleware/rate_limiter";
 
 dotenv.config();
@@ -15,7 +15,7 @@ const app = express();
 // Connect to database
 connectToDatabase();
 
-app.listen(process.env.PORT, () => { console.log(`Server is running on port ${process.env.PORT}`) });
+app.listen(PORT, () => { console.log(`Server is running on port ${process.env.PORT}`) });
 
 // Middlewares. Must be before routes...
 app.use(middlewareRouter);

@@ -5,8 +5,11 @@ import router from "./route/router";
 import middlewareRouter from "./middleware/middleware";
 import morganRouter from "./middleware/morgan";
 import connectToDatabase from "./driver/mongodb";
-import { IResponseSchema, PORT, ResponseStatus } from "./settings";
 import rateLimiterRouter from "./middleware/rate_limiter";
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './docs/swagger';
+import { PORT } from "./settings";
+import { IResponseSchema, ResponseStatus } from "./enums/common";
 
 dotenv.config();
 
@@ -26,8 +29,12 @@ app.use(rateLimiterRouter);
 // Morgan HTTP request logger middleware
 app.use(morganRouter);
 
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // Routes
 app.use(router);
+
 
 
 // Error Handling 

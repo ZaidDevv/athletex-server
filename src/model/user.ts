@@ -25,6 +25,6 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 
-const User = model<IUser>('Workout', UserSchema);
+const User = model<IUser>('User', UserSchema);
 
 export default User;

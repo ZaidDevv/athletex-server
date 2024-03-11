@@ -1,24 +1,15 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Model } from 'mongoose';
 import { IExercise } from './exercise';
+import { Equipment, ExerciseCategory, Position, SkillLevel } from '../enums/common';
 
 export interface IWorkout extends Document {
-    duration: number;
-    categories: [string];
-    description: string;
-    exercises: [IExercise];
-}
-
-export enum ExerciseCategory {
-    SHOOTING = 'Shooting',
-    DRIBBLING = 'Dribbling',
-    DEFENDING = 'Defending',
-    PASSING = 'Passing',
-    REBOUNDING = 'Rebounding',
-    BLOCKING = 'Blocking',
-    STEALING = 'Stealing',
-    FREE_THROW = 'Free Throw',
-    THREE_POINT_SHOOTING = 'Three Point Shooting',
-    TWO_POINT_SHOOTING = 'Two Point Shooting'
+    duration: number; // Duration of the workout in seconds
+    categories: ExerciseCategory[]; // Categories of the exercises in the workout
+    description: string; // Description of the workout
+    exercises: IExercise[]; // Exercises in the workout
+    skillLevel: SkillLevel; // Skill level required (e.g., beginner, intermediate, advanced)
+    positionFocus: Position[]; // Positions that might benefit from the workout (e.g., guard, forward, center)
+    equipmentNeeded: Equipment[]; // Equipment needed for the workout
 }
 
 const workoutSchema = new Schema<IWorkout>({
@@ -32,7 +23,7 @@ const workoutSchema = new Schema<IWorkout>({
     },
     categories: {
         type: [String],
-        enum: Object.values(ExerciseCategory),
+        enum: Object.keys(ExerciseCategory).filter(key => isNaN(Number(key))),
         required: true,
     },
     exercises: {
@@ -40,7 +31,23 @@ const workoutSchema = new Schema<IWorkout>({
         ref: 'Exercise',
         required: true,
     },
+    skillLevel: {
+        type: Number,
+        enum: Object.values(SkillLevel),
+        required: true,
+    },
+    positionFocus: {
+        type: [String],
+        enum: Object.keys(Position).filter(key => isNaN(Number(key))),
+        required: true,
+    },
+    equipmentNeeded: {
+        type: [String],
+        enum: Object.keys(Equipment).filter(key => isNaN(Number(key))),
+        required: true,
+    }
 });
+
 
 const Workout = model<IWorkout>('Workout', workoutSchema);
 

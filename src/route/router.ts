@@ -9,9 +9,6 @@ const router = Router();
 
 router.use(AUTH_PATH, AuthRouter);
 
-// use protected routes with authenticated middleware
-router.use(authenticated);
-
 router.use(WORKOUT_RESOURCE, WorkoutRouter);
 
 export default router;

@@ -1,7 +1,8 @@
 
 import express, { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { IResponseSchema, JWT_SECRET, ResponseStatus } from '../settings';
+import {JWT_SECRET,  } from '../settings';
+import { IResponseSchema, ResponseStatus } from '../enums/common';
 
 const middlewareRouter = express.Router();
 
@@ -39,7 +40,7 @@ export const authenticated = ((req: Request, res: Response, next: NextFunction) 
                 status: ResponseStatus.ERROR,
                 message: 'Unauthorized, Token is invalid or has expired!',
             };
-            res.status(401).json(response);
+            return res.status(401).json(response);
         }
     }
     else {
@@ -47,7 +48,7 @@ export const authenticated = ((req: Request, res: Response, next: NextFunction) 
             status: ResponseStatus.FAIL,
             message: 'Unauthorized, Token is required!',
         };
-        res.status(401).json(response);
+        return res.status(401).json(response);
     }
 });
 

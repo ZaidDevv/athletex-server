@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { rateLimit } from 'express-rate-limit'
 import { Request, Response } from 'express';
-import { ResponseStatus, IResponseSchema } from '../settings';
+import { IResponseSchema, ResponseStatus } from '../enums/common';
 
 const rateLimiterRouter = Router();
 

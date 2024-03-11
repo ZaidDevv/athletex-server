@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { IResponseSchema, JWT_ACCESS_EXPIRATION, JWT_REFRESH_EXPIRATION, JWT_SECRET, ResponseStatus } from '../settings';
+import {JWT_ACCESS_EXPIRATION, JWT_REFRESH_EXPIRATION, JWT_SECRET } from '../settings';
 import jwt from 'jsonwebtoken';
 import User, { IUser } from '../model/user';
 import bcrypt from 'bcryptjs';
+import { IResponseSchema, ResponseStatus } from '../enums/common';
 
 export class AuthController {
     static async login(req: Request, res: Response) {
@@ -58,9 +59,11 @@ export class AuthController {
                         email: user.email,
                         DOB: user.DOB,
                         username: user.username,
+                        tokens:{
+                            accessToken,
+                            refreshToken,
+                        }
                     },
-                    accessToken,
-                    refreshToken,
                 }
             } as IResponseSchema;
 
@@ -109,9 +112,12 @@ export class AuthController {
                         email: user.email,
                         DOB: user.DOB,
                         username: user.username,
+                        tokens:{
+                            accessToken,
+                            refreshToken,
+                        }
                     },
-                    accessToken,
-                    refreshToken,
+
                 }
             } as IResponseSchema;
 
@@ -139,16 +145,7 @@ export class AuthController {
 
         try {
             const verified = jwt.verify(req.body.refreshToken, JWT_SECRET) as jwt.JwtPayload;;
-
-            console.log(verified)
-            if (!verified || !('username' in verified.data && 'email' in verified.data)) {
-                response = {
-                    status: ResponseStatus.FAIL,
-                    message: 'Unauthorized, Token is invalid or has expired!',
-                };
-                return res.status(401).json(response);
-            }
-
+            
             const accessToken: string = jwt.sign({
                 data: { 'username': verified.data.username, 'email': verified.data.email, }
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
@@ -160,8 +157,10 @@ export class AuthController {
             response = {
                 status: ResponseStatus.SUCCESS,
                 data: {
-                    accessToken,
-                    refreshToken
+                    tokens:{
+                        accessToken,
+                        refreshToken
+                    }
                 }
             } as IResponseSchema;
 

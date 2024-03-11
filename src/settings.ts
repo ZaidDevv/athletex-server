@@ -18,24 +18,13 @@ export const PORT = process.env.PORT || 3000;
 
 export const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export const JWT_ACCESS_EXPIRATION = process.env.JWT_ACCESS_EXPIRATION || '2d';
+export const JWT_ACCESS_EXPIRATION = process.env.ACCESS_JWT_EXPIRATION|| '2d';
 
-export const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION || '20d';
+export const JWT_REFRESH_EXPIRATION = process.env.REFRESH_JWT_EXPIRATION || '20d';
 
 export const EXERCISE_COLLECTION = 'exercises';
 
 export const USER_COLLECTION = 'users';
 
 export const WORKOUT_COLLECTION = 'workouts';
-export interface IResponseSchema {
-    status: ResponseStatus;
-    data?: any;
-    message?: string;
-}
-
-export enum ResponseStatus {
-    SUCCESS = "success",
-    ERROR = "error",
-    FAIL = "fail"
-}
 

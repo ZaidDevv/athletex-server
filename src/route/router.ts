@@ -2,10 +2,12 @@ import { Router } from 'express';
 import { AUTH_PATH, WORKOUT_RESOURCE } from '../settings';
 import AuthRouter from './auth_router';
 import WorkoutRouter from './workout_router';
-import logger from '../logger';
+import wLogger from '../logger';
 
 // Create a new router
 const router = Router();
+
+const logger = wLogger({logName: 'router', level: 'silly'});
 
 // index route
 router.get('/', (req, res) => {

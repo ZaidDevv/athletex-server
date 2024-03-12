@@ -36,7 +36,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(router);
 
 
-
 // Error Handling 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);

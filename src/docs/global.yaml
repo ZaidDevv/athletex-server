@@ -51,7 +51,6 @@ components:
               data:
                 type: object
                 required: false
-                additionalProperties: true
                 description: The data returned from the request.
               message:
                 type: string

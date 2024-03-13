@@ -5,8 +5,9 @@ import fs from 'fs';
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         // check if the directory exists and create it if it doesn't
-        if (!fs.existsSync(path.join(process.cwd(), "src",'public', 'uploads'))) {
-            fs.mkdirSync(path.join(process.cwd(), "src",'public', 'uploads'));
+        if (!fs.existsSync(path.join(process.cwd(),'src','public', 'uploads'))) {
+            // make both the directory and any necessary subdirectories
+            fs.mkdirSync(path.join(process.cwd(), "src",'public', 'uploads'), { recursive: true });
         }
         cb(null, path.join(process.cwd(), "src",'public', 'uploads'));
     },

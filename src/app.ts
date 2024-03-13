@@ -23,9 +23,6 @@ app.listen(PORT, () => { console.log(`Server is running on port ${process.env.PO
 // Serve static files from the "public" directory
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
-// Serve static files from the "public/assets/images" directory
-app.use('/images', express.static(path.join(__dirname, 'public', 'assets', 'images')));
-
 // Middlewares. Must be before routes...
 app.use(middlewareRouter);
 

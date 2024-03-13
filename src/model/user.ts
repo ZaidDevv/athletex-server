@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 export interface IUser extends Document {
     fullName: string;
     email: string;
+    isAdmin: boolean;
     DOB: Date;
     username: string;
     password: string;
@@ -16,6 +17,7 @@ const UserSchema = new Schema<IUser>({
     DOB: { type: Date, required: true },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    isAdmin: { type: Boolean, default: false }
 });
 
 UserSchema.pre('save', async function (next) {

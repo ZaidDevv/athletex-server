@@ -27,15 +27,14 @@ const exerciseSchema: Schema = new Schema({
     effortLevel: { type: Number, required: true },
     duration: { type: Number, required: true },
     skillLevel: { 
-        type: Number,
-        enum:Object.values(SkillLevel),
+        type: String,
+        enum:Object.keys(SkillLevel),
         required: true },
     category: {
         type: String,
-        enum: Object.keys(ExerciseCategory).filter(key => isNaN(Number(key))),
+        enum: Object.keys(ExerciseCategory),
         required: true,
     },
-
     positionFocus: {
         type: [String],
         enum: Object.keys(Position).filter(key => isNaN(Number(key))),
@@ -43,7 +42,7 @@ const exerciseSchema: Schema = new Schema({
     },
     equipmentNeeded: {
         type: [String],
-        enum: Object.values(Equipment),
+        enum: Object.keys(Equipment),
         required: true,
     },
     courtArea: {

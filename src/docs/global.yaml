@@ -1,0 +1,227 @@
+components:
+  responses:
+    Unauthorized:
+      description: Unauthorized. The user's credentials are invalid or the token is expired/invalid.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/components/schemas/ResponseStatusEnum'
+              message:
+                type: string
+                description: A message indicating the status of the request.
+                example: "Invalid credentials, or expired/invalid token!"
+    NotFound:
+      description: Not Found. The resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/components/schemas/ResponseStatusEnum'
+              message:
+                type: string
+                description: A message indicating the status of the request.
+                example: "resource not found!"
+    UnprocessableEntity:
+      description: Invalid request body. Please check the provided body.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/components/schemas/ResponseStatusEnum'
+              message:
+                type: string
+                description: A message indicating the status of the request.
+                example: "Invalid request body, Please check the provided body!"
+    Success:
+      description: Success. The request was successful.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: '#/components/schemas/ResponseStatusEnum'
+              data:
+                type: object
+                required: false
+                additionalProperties: true
+                description: The data returned from the request.
+              message:
+                type: string
+                required: false
+                description: A message indicating the status of the request.
+                example: "Request was successful!"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    PositionEnum:
+      type: string
+      required: true
+      enum:
+        - Guard
+        - Forward
+        - Center
+        - All
+      description: The position of the player on the court
+    EquipmentEnum:
+      type: string
+      required: true
+      enum:
+        - Basketball
+        - Cones
+        - Resistance Bands
+        - Jump Rope
+        - Medicine Ball
+        - Weights
+        - Hoop
+        - None
+      description: The equipment needed for the exercise
+    ExerciseCategoryEnum:
+      type: string
+      required: true
+      enum:
+        - Shooting
+        - Dribbling
+        - Defending
+        - Passing
+        - Rebounding
+        - Blocking
+        - Stealing
+        - Conditioning
+        - Footowrk
+        - Free Throw
+        - Three Point Shooting
+        - Two Point Shooting
+        - None
+      description: The category of the exercise
+    ResponseStatusEnum:
+      type: string
+      example: success | fail | error
+      required: true
+      enum:
+        - success
+        - fail
+        - error
+      description: The status of the response
+    Exercise:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the exercise
+        category:
+          $ref: '#/components/schemas/ExerciseCategoryEnum'
+          description: The category of the exercise
+        duration:
+          type: number
+          example: 20
+          description: The duration of the exercise in minutes
+        reps:
+          type: number
+          example: 10
+          description: The number of repetitions for the exercise
+        sets:
+          type: number
+          example: 3
+          description: The number of sets for the exercise
+        restPeriod:
+          type: number
+          example: 2
+          description: The rest period between sets in seconds
+        skillLevel:
+          type: string
+          enum:
+            - Beginner
+            - Intermediate
+            - Advanced
+          description: The skill level required for the exercise
+        positionFocus:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionEnum'
+          description: The positions that might benefit from the exercise
+        equipmentNeeded:
+          type: array
+          items:
+            $ref: '#/components/schemas/EquipmentEnum'
+          description: The equipment needed for the exercise
+    Workout:
+      type: object
+      properties:
+        duration:
+          type: number
+          example: 30
+          description: The duration of the workout in minutes
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExerciseCategoryEnum'
+          description: The categories of exercises included in the workout
+        exercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exercise'
+          description: The exercises included in the workout
+        skillLevel:
+          type: string
+          enum:
+            - Beginner
+            - Intermediate
+            - Advanced
+          description: The skill level required for the workout
+        positionFocus:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionEnum'
+          description: The positions that might benefit from the workout
+        equipmentNeeded:
+          type: array
+          items:
+            $ref: '#/components/schemas/EquipmentEnum'
+          description: The equipment needed for the workout
+    WorkoutResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ResponseStatusEnum'
+        data:
+          $ref: '#/components/schemas/Workout'
+          description: The generated workout
+    User:
+      type: object
+      properties:
+        fullName:
+          type: string
+          description: The full name of the user.
+          example: "John Doe"
+        email:
+          type: string
+          description: The email of the user.
+          example: "test@hotmail.com"
+        DOB:
+          type: string
+          description: The date of birth of the user.
+          example: "1990-01-01"
+        username:
+          type: string
+          description: The username of the user.
+          example: "johndoe"
+    Tokens:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: The user's access token.
+        refreshToken:
+          type: string
+          description: The user's refresh token.

@@ -19,7 +19,7 @@ const options: swaggerJsDoc.Options = {
       },
     ],
   },
-  apis: ['./src/route/*.ts'], // files containing annotations as above
+  apis: ['./src/route/*.ts','./src/docs/*.yaml'], // files containing annotations as above
 };
 
 const specs = swaggerJsDoc(options);

@@ -1,93 +1,17 @@
 import express from 'express';
 import { AuthController } from '../controller/auth_controller';
+import path from 'path';
 
 const AuthRouter = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: User authentication routes
  * components:
- *   responses:
- *     Unauthorized:
- *       description: Unauthorized. The user's credentials are invalid or the token is expired/invalid.
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
- *                 description: The status of the response.
- *                 example: "fail"
- *               message:
- *                 type: string
- *                 description: A message indicating the status of the request.
- *                 example: "Invalid credentials, or expired/invalid token!"
- *     NotFound:
- *       description: Not Found. The resource was not found.
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
- *                 description: The status of the response.
- *                 example: "fail"
- *               message:
- *                 type: string
- *                 description: A message indicating the status of the request.
- *                 example: "resource not found!"
- *     UnprocessableEntity:
- *       description: Invalid request body. Please check the provided body.
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
- *                 description: The status of the response.
- *                 example: "error"
- *               message:
- *                 type: string
- *                 description: A message indicating the status of the request.
- *                 example: "Invalid request body, Please check the provided body!"
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- *   schemas:
- *     User:
- *       type: object
- *       properties:
- *         fullName:
- *           type: string
- *           description: The full name of the user.
- *           example: "John Doe"
- *         email:
- *           type: string
- *           description: The email of the user.
- *           example: "test@hotmail.com"
- *         DOB:
- *           type: string
- *           description: The date of birth of the user.
- *           example: "1990-01-01"
- *         username:
- *           type: string
- *           description: The username of the user.
- *           example: "johndoe"
- *     Tokens:
- *       type: object
- *       properties:
- *         accessToken:
- *           type: string
- *           description: The user's access token.
- *         refreshToken:
- *           type: string
- *           description: The user's refresh token.
+ *   $ref: '../docs/global.yaml#/components'
  */
-
 
 /**
  * @swagger
@@ -255,8 +179,11 @@ AuthRouter.post(`/register`, AuthController.register);
  * 
  */
 
-// Refresh token route
 AuthRouter.post(`/refresh`, AuthController.refreshToken);
 
+
+AuthRouter.get(`/login`, (req, res) => {
+    return res.sendFile(path.join(__dirname, '..', 'form', 'login.html'));
+});
 
 export default AuthRouter;

@@ -1,0 +1,198 @@
+<head>
+    <style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(to right, #36d1dc, #5b86e5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .login-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px 0px black;
+        width: 300px;
+        padding: 20px;
+    }
+    .login-container img {
+        display: block;
+        margin: 0 auto 20px;
+        max-width: 100%;
+        height: auto;
+    }
+    .login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+    .login-container label {
+        font-weight: bold;
+    }
+    .login-container input[type=text], .login-container input[type=password] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+    .login-container button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        opacity: 0.9;
+    }
+    .login-container button:hover {
+        opacity:1;
+    }
+    .input-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .input-container i {
+        padding: 10px;
+        min-width: 50px;
+        text-align: center;
+    }
+    .input-container input {
+        padding: 10px;
+        border: none;
+        outline: none;
+    }
+    .login-container form .input-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+.login-container form .input-container i {
+    margin-right: 10px;
+}
+.login-container form .input-container input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+}
+.login-container form button {
+    background-color: #5b86e5;
+    font-weight: bold;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.login-container form button:hover {
+    background-color: #7c9feb;}
+#error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    position: fixed; /* Position it at a fixed spot on the screen */
+    top: 20px; /* 20px from the top */
+    left: 50%; /* Center it horizontally */
+    transform: translateX(-50%); /* Center it horizontally */
+    opacity: 0; /* Start invisible */
+    transition: opacity 0.5s ease; /* Animate the opacity */
+    font-family: 'Roboto', sans-serif; /* Use the same font as the rest of the page */
+    text-align: center; /* Center the text */
+    width: 80%; /* Take up 80% of the screen width */
+    max-width: 600px; /* But don't be wider than 600px */
+    z-index: 1000; /* Make sure it's on top of other elements */
+}
+    </style>
+    <!-- Add this line to include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="error-message" style="display: block;"></div>
+    <div class="login-container">
+        <img src="/images/logo-monochrome-jpg-thumb.png" alt="Athletex Logo">
+        <form action="/api/v1/auth/login" method="post">
+            <div class="input-container">
+                <i class="fas fa-user icon"></i>
+                <input type="text" placeholder="Enter Username" name="uname" required>
+            </div>
+            <div class="input-container">
+                <i class="fas fa-lock icon"></i>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+            </div>
+
+            <button type="submit">
+                <i class="fas fa-sign-in-alt" style="margin-right: 10px;"></i>Login
+            </button>
+        </form>
+    </div>
+</body>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from being submitted in the traditional way
+
+        // Get form data
+        const username = document.querySelector('input[name="uname"]').value;
+        const password = document.querySelector('input[name="psw"]').value;
+
+        // Send a POST request to the server
+        fetch('/api/v1/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password }) // Send the form data as JSON
+        })
+        .then(response => response.json()) // Parse the response as JSON
+        .then(data => {
+            // Handle the response data
+            var errorMessageDiv = document.getElementById('error-message');
+            if (data.status === 'success' && data.data !== undefined && data.data.user.isAdmin === true) {
+                let token = data.data.user.tokens.accessToken;
+                localStorage.setItem('accessToken', token);
+                fetch('/dashboard', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                    // other options...
+                }).then(response => {
+                    if(response.status === 200) {
+                        window.location.href = '/dashboard?token=' + encodeURIComponent(token);
+                    } else {
+                        errorMessageDiv.style.opacity = '1'; // Make it visible
+                        errorMessageDiv.textContent = data.message ?? 'You do not have permission to access this page';
+                    }
+                });
+
+            } else if(data.status === 'success' && data.data !== undefined && data.data.user.isAdmin === false) {
+                errorMessageDiv.style.opacity = '1'; // Make it visible
+                errorMessageDiv.textContent = data.message ?? 'You do not have permission to access this page';
+            } else {
+                errorMessageDiv.style.opacity = '1'; // Make it visible
+                errorMessageDiv.textContent = data.message ?? 'You do not have permission to access this page';
+            }
+            setTimeout(function() {
+                        errorMessageDiv.style.opacity = '0'; // Make it invisible
+                    }, 5000);
+        })
+        .catch(error => {
+            // Handle any errors
+            console.error('Error:', error);
+        });
+    });
+</script>
+</html>

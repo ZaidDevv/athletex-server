@@ -1,18 +1,20 @@
 
-// 
+// Enum for the basketball exercise category
 export enum ExerciseCategory {
-    SHOOTING,
-    DRIBBLING,
-    DEFENDING,
-    PASSING,
-    REBOUNDING,
-    BLOCKING,
-    STEALING ,
-    FREE_THROW ,
-    THREE_POINT_SHOOTING,
-    TWO_POINT_SHOOTING 
+    NONE = "NONE",
+    SHOOTING = "Shooting",
+    DRIBBLING = "Dribbling",
+    PASSING = "Passing",
+    DEFENDING = "Defending",
+    BLOCKING = "Blocking",
+    STEALING = "Stealing",
+    TWO_POINT_SHOOTING = "Two Point Shooting",
+    THREE_POINT_SHOOTING = "Three Point Shooting",
+    FREE_THROW = "Free Throw",
+    REBOUNDING = "Rebounding",
+    CONDITIONING = "Conditioning",
+    FOOTWORK = "Footwork"
 }
-
 // Enum for the area of the court where the exercise is performed
 export enum CourtArea {
     PAINT,

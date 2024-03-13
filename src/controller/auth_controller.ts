@@ -46,10 +46,10 @@ export class AuthController {
             }
 
             const accessToken: string = jwt.sign({
-                data: { 'username': user.username, 'email': user.email, }
+                data: { 'username': user.username, 'email': user.email, 'isRefreshToken': false}
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
 
-            const refreshToken: string = jwt.sign({ data: { 'username': user.username, 'email': user.email, } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
+            const refreshToken: string = jwt.sign({ data: { 'username': user.username, 'email': user.email, 'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 
             response = {
                 status: ResponseStatus.SUCCESS,
@@ -59,6 +59,7 @@ export class AuthController {
                         email: user.email,
                         DOB: user.DOB,
                         username: user.username,
+                        isAdmin: user.isAdmin,
                         tokens:{
                             accessToken,
                             refreshToken,
@@ -91,10 +92,10 @@ export class AuthController {
         }
         try {
             const accessToken: string = jwt.sign({
-                data: { 'username': req.body.username, 'email': req.body.email, }
+                data: { 'username': req.body.username, 'email': req.body.email,'isRefreshToken': false }
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
 
-            const refreshToken: string = jwt.sign({ data: { 'username': req.body.username, 'email': req.body.email, } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
+            const refreshToken: string = jwt.sign({ data: { 'username': req.body.username, 'email': req.body.email,'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 
             const user = await User.create({
                 fullName: req.body.fullName,
@@ -147,11 +148,11 @@ export class AuthController {
             const verified = jwt.verify(req.body.refreshToken, JWT_SECRET) as jwt.JwtPayload;;
             
             const accessToken: string = jwt.sign({
-                data: { 'username': verified.data.username, 'email': verified.data.email, }
+                data: { 'username': verified.data.username, 'email': verified.data.email,'isRefreshToken': false }
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
 
             const refreshToken: string = jwt.sign(
-                { data: { 'username': verified.data.username, 'email': verified.data.email, } },
+                { data: { 'username': verified.data.username, 'email': verified.data.email,'isRefreshToken': true } },
                 JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 
             response = {

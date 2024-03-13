@@ -18,9 +18,15 @@ middlewareRouter.use((req: Request, res: Response, next: NextFunction) => {
 // Middleware to check if the request is authenticated
 export const authenticated = ((req: Request, res: Response, next: NextFunction) => {
     let response: IResponseSchema;
+    let token: string | undefined;
+
     if (req.headers.authorization) {
+        token = req.headers.authorization.split(' ')[1];
+    } else if (req.query.token) {
+        token = req.query.token as string;
+    }
+    if (token) {
         try {
-            const token = req.headers.authorization.split(' ')[1];
             // verify the token
             const verified = jwt.verify(token, JWT_SECRET);
 
@@ -32,7 +38,7 @@ export const authenticated = ((req: Request, res: Response, next: NextFunction) 
                 res.status(401).json(response);
                 return;
             }
-
+            
             next();
         }
         catch (e) {

@@ -10,6 +10,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './docs/swagger';
 import { PORT } from "./settings";
 import { IResponseSchema, ResponseStatus } from "./enums/common";
+import path from 'path';
 
 dotenv.config();
 
@@ -17,8 +18,13 @@ const app = express();
 
 // Connect to database
 connectToDatabase();
-
 app.listen(PORT, () => { console.log(`Server is running on port ${process.env.PORT}`) });
+
+// Serve static files from the "public" directory
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
+// Serve static files from the "public/assets/images" directory
+app.use('/images', express.static(path.join(__dirname, 'public', 'assets', 'images')));
 
 // Middlewares. Must be before routes...
 app.use(middlewareRouter);

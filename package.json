@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "start": "nodemon --watch \"src/**/*\" -e ts --exec \"node_modules\\.bin\\ts-node\" src\\app.ts",
-    "copy": "copyfiles -u 1 src/form/* dist/form",
+    "copy": "copyfiles -u 1 src/form/* dist/",
     "build": "tsc && npm run copy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

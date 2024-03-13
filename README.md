@@ -19,6 +19,8 @@ Welcome to the latest version of Athletex Server! This server is designed to sup
 - JSON Web Tokens (JWT): For user authentication and secure routing.
 - [Add any other technologies used here]
 
+## Admin Dasboard preview
+
 ## Installation
 
 1. Clone the repository:

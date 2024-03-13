@@ -44,7 +44,10 @@
             background-color: #ffffff;
             color: #000000;
         }
-        
+        #submit-add-exercise:hover {
+        background-color: #5b86e5; /* Change color on hover */
+        transition: background-color 0.3s ease; /* Smooth transition */
+        }
         #error-message {
         color: #721c24;
         background-color: #f8d7da;
@@ -82,8 +85,8 @@
     </button>
     <div id="error-message" style="display: block;"></div>
     <div class="container-fluid">
-        <h2 class="text-center mb-5" style="color: #fff; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;">
-            <i class="fas fa-basketball" style="margin-right: 15px;"></i> Add Exercise
+        <h2 class="text-center mb-5" style="color: white; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;">
+            <i class="fas fa-basketball" style="margin-right: 15px; color: white;"></i> Add Exercise
         </h2>
         <form id="add-exercise-form">
             <div class="form-group">
@@ -128,7 +131,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-sm fa-clock"></i></span>
                             </div>
-                            <input class="form-control" id="duration" name="duration" type="number" min="1" max="5" placeholder="Duration (1-5) Minutes">
+                            <input class="form-control" id="duration" name="duration" type="number" min="1" max="20" placeholder="Duration (1-20) Minutes">
                             <div class="input-group-append">
                                 <span class="input-group-text">Minutes</span>
                             </div>
@@ -191,6 +194,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-lg-6 mx-auto">
+                        
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-sm fa-street-view"></i></span>
@@ -310,7 +314,7 @@
                 </div>
             </div>
             <div class="form-group text-center" style="display: flex; justify-content: center; padding-top: 20px; padding-bottom: 20px;">
-                <button id="submit-add-exercise" style="font-weight: bold; padding: 20px 50px; color: #ffffff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; display: flex; align-items: center; background-color: #5b86e5;">
+                <button id="submit-add-exercise" style="font-weight: bold; padding: 20px 50px; color: #ffffff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; display: flex; align-items: center; background-color: black;" onmouseover="this.style.backgroundColor='#5b86e5';" onmouseout="this.style.backgroundColor='black';">
                     <i class="fas fa-plus-circle" style="margin-right: 5px;"></i>Insert Exercise
                 </button>
             </div>

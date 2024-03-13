@@ -23,7 +23,7 @@ const exerciseSchema: Schema = new Schema({
     videoLink: { type: String, required: true },
     sets: { type: Number, required: false },
     name: { type: String, required: true }, 
-    description: { type: String, required: true },
+    description: { type: String, required: false },
     effortLevel: { type: Number, required: true },
     duration: { type: Number, required: true },
     skillLevel: { 
@@ -38,7 +38,7 @@ const exerciseSchema: Schema = new Schema({
     positionFocus: {
         type: [String],
         enum: Object.keys(Position).filter(key => isNaN(Number(key))),
-        required: true,
+        required: false,
     },
     equipmentNeeded: {
         type: [String],
@@ -48,7 +48,7 @@ const exerciseSchema: Schema = new Schema({
     courtArea: {
         type: String,
         enum: Object.keys(CourtArea).filter(key => isNaN(Number(key))),
-        required: true,
+        required: false,
     },
 });
 

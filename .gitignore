@@ -93,6 +93,9 @@ yarn.lock
 .cache
 .parcel-cache
 
+# logs folder
+logs
+
 # Next.js build output
 .next
 out

@@ -1,4 +1,10 @@
 import winston from 'winston';
+import fs from 'fs';
+
+console.log("asdasd")
+if (!fs.existsSync('logs')) {
+  fs.mkdirSync('logs', { recursive: true });
+}
 
 const config = {
     levels: {
@@ -29,7 +35,6 @@ const config = {
       transports: [
         new winston.transports.Console({
           level: `${input.level}`,
-  
           format: winston.format.combine(
             winston.format.timestamp(),
             winston.format.printf(
@@ -46,61 +51,73 @@ const config = {
           )
         }),
         new winston.transports.File({
-          filename: `../src/logs/${input.logName}/${input.logName}-Error.log`,
+          filename: `logs/${input.logName}/${input.logName}-Error.log`,
           level: 'error',
-          format: winston.format.printf(
-            info =>
-              `${new Date(info.timestamp).toLocaleDateString('tr-Tr', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              })} ${info.level.toLocaleUpperCase()}: ${info.message}`
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(
+              info =>
+                `${new Date(info.timestamp).toLocaleDateString('tr-Tr', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })} ${info.level.toLocaleUpperCase()}: ${info.message}`
+            )
           )
         }),
         new winston.transports.File({
-          filename: `../src/logs/${input.logName}/${input.logName}-Warn.log`,
+          filename: `logs/${input.logName}/${input.logName}-Error.log`,
           level: 'warn',
-          format: winston.format.printf(
-            info =>
-              `${new Date(info.timestamp).toLocaleDateString('tr-Tr', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              })} ${info.level.toLocaleUpperCase()}: ${info.message}`
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(
+              info =>
+                `${new Date(info.timestamp).toLocaleDateString('tr-Tr', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })} ${info.level.toLocaleUpperCase()}: ${info.message}`
+            )
           )
         }),
         new winston.transports.File({
-          filename: `../src/logs/${input.logName}/${input.logName}-All.log`,
+          filename: `logs/${input.logName}/${input.logName}-Error.log`,
           level: 'silly',
-          format: winston.format.printf(
-            info =>
-              `${new Date(info.timestamp).toLocaleDateString('tr-Tr', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              })} ${info.level.toLocaleUpperCase()}: ${info.message}`
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(
+              info =>
+                `${new Date(info.timestamp).toLocaleDateString('tr-Tr', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })} ${info.level.toLocaleUpperCase()}: ${info.message}`
+            )
           )
         }),
   
         new winston.transports.File({
-          format: winston.format.printf(
-            info =>
-              `${new Date(info.timestamp).toLocaleDateString('tr-Tr', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              })} ${info.level.toLocaleUpperCase()}: ${info.message}`
-          ),
-          filename: '../src/logs/globalLog.log',
-          level: 'silly'
+          filename: `logs/globalLog.log`,
+          level: 'silly',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.printf(
+              info =>
+                `${new Date(info.timestamp).toLocaleDateString('tr-Tr', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })} ${info.level.toLocaleUpperCase()}: ${info.message}`
+            )
+          )
         })
       ]
     });

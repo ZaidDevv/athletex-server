@@ -4,10 +4,14 @@ import jwt from 'jsonwebtoken';
 import User, { IUser } from '../model/user';
 import bcrypt from 'bcryptjs';
 import { IResponseSchema, ResponseStatus } from '../enums/common';
+import wLogger from '../logger';
+import { level } from 'winston';
 
+const logger = wLogger({logName: 'AuthController', level: 'info'});
 export class AuthController {
     static async login(req: Request, res: Response) {
 
+        logger.info('Login request received');
         let response: IResponseSchema;
 
         // Check if either username or email is provided
@@ -16,6 +20,7 @@ export class AuthController {
                 status: ResponseStatus.ERROR,
                 message: "Invalid request body, please provide either an email or a username!",
             } as IResponseSchema;
+            logger.info(response.message);
             return res.status(422).json(response);
         }
 
@@ -32,6 +37,7 @@ export class AuthController {
                     status: ResponseStatus.ERROR,
                     message: "User not found!",
                 } as IResponseSchema;
+                logger.info(response.message);
                 return res.status(404).json(response);
             }
 
@@ -42,6 +48,7 @@ export class AuthController {
                     status: ResponseStatus.ERROR,
                     message: "Invalid username/email or password",
                 } as IResponseSchema;
+                logger.info(response.message);
                 return res.status(401).json(response);
             }
 
@@ -67,7 +74,8 @@ export class AuthController {
                     },
                 }
             } as IResponseSchema;
-
+            logger.info('Login successful');
+            logger.info(response);
             return res.status(200).json(response);
         } catch (error) {
             const message = (error instanceof Error) ? error.message : 'An unknown error occurred';
@@ -75,6 +83,7 @@ export class AuthController {
                 status: ResponseStatus.ERROR,
                 message: message,
             } as IResponseSchema;
+            logger.error(response.message);
             return res.status(500).json(response);
 
         }
@@ -88,6 +97,7 @@ export class AuthController {
                 status: ResponseStatus.ERROR,
                 message: "Invalid request body",
             } as IResponseSchema;
+            logger.info(response.message);
             return res.status(422).json(response);
         }
         try {
@@ -122,6 +132,8 @@ export class AuthController {
                 }
             } as IResponseSchema;
 
+            logger.info('User registered successfully')
+            logger.info(response);
             return res.status(201).json(response);
         } catch (error) {
             const message = (error instanceof Error) ? error.message : 'An unknown error occurred';
@@ -129,6 +141,7 @@ export class AuthController {
                 status: ResponseStatus.ERROR,
                 message: message,
             } as IResponseSchema;
+            logger.error(response.message);
             return res.status(500).json(response);
         }
     };
@@ -141,6 +154,7 @@ export class AuthController {
                 status: ResponseStatus.ERROR,
                 message: "Invalid request body",
             } as IResponseSchema;
+            logger.warn(response.message);
             return res.status(422).json(response);
         }
 
@@ -166,7 +180,8 @@ export class AuthController {
                     }
                 }
             } as IResponseSchema;
-
+            logger.info('Token refreshed successfully');
+            logger.info(response);
             return res.status(200).json(response);
         } catch (error) {
             const message = (error instanceof Error) ? error.message : 'An unknown error occurred';
@@ -181,6 +196,8 @@ export class AuthController {
             else if (error instanceof jwt.JsonWebTokenError) {
                 return res.status(401).json(response);
             }
+            logger.warn(response.message);
+
             return res.status(500).json(response);
         }
     }

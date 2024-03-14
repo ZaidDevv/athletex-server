@@ -12,14 +12,14 @@ export interface IWorkout extends Document {
     equipmentNeeded: Equipment[]; // Equipment needed for the workout
 }
 
-const workoutSchema = new Schema<IWorkout>({
+const workoutSchema : Schema = new Schema({
     duration: {
         type: Number,
         required: true,
     },
     description: {
         type: String,
-        required: true,
+        required: false,
     },
     categories: {
         type: [String],
@@ -31,11 +31,10 @@ const workoutSchema = new Schema<IWorkout>({
         ref: 'Exercise',
         required: true,
     },
-    skillLevel: {
-        type: Number,
-        enum: Object.values(SkillLevel),
-        required: true,
-    },
+    skillLevel: { 
+        type: String,
+        enum:Object.keys(SkillLevel),
+        required: true },
     positionFocus: {
         type: [String],
         enum: Object.keys(Position).filter(key => isNaN(Number(key))),

@@ -1,11 +1,11 @@
-import { Equipment, ExerciseCategory, IResponseSchema, ResponseStatus } from "../enums/common";
+import { Equipment, ExerciseCategory, IResponseSchema, ResponseStatus, SkillLevel } from "../enums/common";
 import { Response,Request } from "express";
 import Exercise, { IExercise } from "../model/exercise";
 import Workout, { IWorkout } from "../model/workout";
 
 export class WorkoutController {
     static generateWorkout = async (req: Request, res: Response) => {
-        const { timeAllocated, exerciseCategories} = req.body;
+        const { timeAllocated, exerciseCategories, isDetailed = false} = req.body;
         let response: IResponseSchema;
 
         if (!timeAllocated || !exerciseCategories) {
@@ -19,7 +19,10 @@ export class WorkoutController {
         try{
             const workout = await produceWorkout(timeAllocated, exerciseCategories);
             const newWorkout = await Workout.create(workout);
-            
+
+            if(isDetailed){
+                await Workout.populate(newWorkout, { path: 'exercises' });
+            }
             res.json({ status: ResponseStatus.SUCCESS, data: newWorkout } as IResponseSchema);
             return;
         } catch (e) {
@@ -86,16 +89,29 @@ async function produceWorkout(timeAllocated: number, exerciseCategories: Exercis
             randomExercise.equipmentNeeded.forEach(equipment => equipments.add(equipment));
             workoutExercises.push(randomExercise);
             randomExercise.positionFocus.forEach(position => {
+                workout.positionFocus = workout.positionFocus || [];
                 if (!workout.positionFocus.includes(position)) {
                     workout.positionFocus.push(position);
                 }
             });
         }
     }
+    console.log(workoutExercises);
     workout.exercises = workoutExercises;
     workout.duration = workoutDuration;
     workout.categories = exerciseCategories;
-    workout.skillLevel = workoutExercises.reduce((acc, exercise) => acc + exercise.skillLevel.valueOf(), 0) / workoutExercises.length;
+    // convert number to skillLevel
+    workout.skillLevel = getSkillLevelFromNumber(Math.round(workoutExercises.reduce((acc, exercise) => acc + Number(SkillLevel[exercise.skillLevel]), 0) / workoutExercises.length));
     workout.equipmentNeeded = Array.from(equipments);
     return workout;
 }
+
+function getSkillLevelFromNumber(value: number): SkillLevel {
+    const keys = Object.keys(SkillLevel);
+    for (let key of keys) {
+      if (SkillLevel[key as keyof typeof SkillLevel] == value) {
+        return key as unknown as SkillLevel;
+      }
+    }
+    throw new Error('Invalid skill level value');
+  }

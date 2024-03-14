@@ -11,7 +11,7 @@ export interface IExercise extends Document {
     reps: number; // Number of repetitions for the exercise
     sets: number; // Number of sets for the exercise
     restPeriod: number; // Rest period between sets in minutes
-    skillLevel: SkillLevel; // Skill level required (e.g., beginner, intermediate, advanced)
+    skillLevel: SkillLevel; // Skill level required (e.g., beginner, intermediate, advanced, expert)
     positionFocus: Position[]; // Positions that might benefit from the drill (e.g., guard, forward, center)
     equipmentNeeded: Equipment[]; // Equipment needed for the drill (e.g., basketball, cones)
     courtArea: CourtArea; // Area of the court where the drill is performed (e.g., paint, three-point line, baseline)

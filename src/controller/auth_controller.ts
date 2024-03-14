@@ -145,8 +145,10 @@ export class AuthController {
         }
 
         try {
-            const verified = jwt.verify(req.body.refreshToken, JWT_SECRET) as jwt.JwtPayload;;
-            
+            const verified = jwt.verify(req.body.refreshToken, JWT_SECRET) as jwt.JwtPayload;
+            if(verified.data.isRefreshToken === false){
+                throw new jwt.JsonWebTokenError('Refresh token passed instead of access token');
+            }
             const accessToken: string = jwt.sign({
                 data: { 'username': verified.data.username, 'email': verified.data.email,'isRefreshToken': false }
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
@@ -174,11 +176,9 @@ export class AuthController {
             } as IResponseSchema;
 
             if (error instanceof jwt.TokenExpiredError) {
-                response.message = 'Token has expired';
                 return res.status(401).json(response);
             }
             else if (error instanceof jwt.JsonWebTokenError) {
-                response.message = 'Invalid token';
                 return res.status(401).json(response);
             }
             return res.status(500).json(response);

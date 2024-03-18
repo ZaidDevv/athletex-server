@@ -67,9 +67,10 @@ components:
       type: string
       required: true
       enum:
-        - Guard
-        - Forward
+        - Point Guard
+        - Power Forwrad
         - Center
+        - Shooting Guard
         - All
       description: The position of the player on the court
     EquipmentEnum:

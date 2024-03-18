@@ -41,8 +41,9 @@ export enum Equipment {
 
 // Enum for the position focus of the exercise
 export enum Position{
-    GUARD,
-    FORWARD,
+    POINT_GUARD,
+    POWER_FORWARD,
+    SHOOTING_GUARD,
     CENTER,
     ALL,
 }
@@ -51,6 +52,7 @@ export enum SkillLevel {
     BEGINNER = 1,
     INTERMEDIATE = 2,
     ADVANCED = 3,
+    EXPERT = 4
 }
 
 // Enum for the response schema

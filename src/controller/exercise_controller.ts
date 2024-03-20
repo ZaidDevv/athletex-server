@@ -1,8 +1,8 @@
 import express from 'express';
 import multer from 'multer';
 import { authenticated } from '../middleware/middleware';
-import Exercise, { IExercise } from '../model/exercise';
-import { IResponseSchema, ResponseStatus } from '../enums/common';
+import Exercise, { ExerciseSet, IExercise } from '../model/exercise';
+import { CourtArea, Equipment, ExerciseCategory, IResponseSchema, Position, ResponseStatus, SkillLevel, getEnumValue } from '../enums/common';
 import upload from '../middleware/multer';
 import { HOST, PORT } from '../settings';
 import path from 'path';
@@ -33,22 +33,39 @@ export class ExerciseController {
         // Construct the URL
         const videoLink = `http://${HOST}:${PORT}/${urlPath}`;
 
-            const exercise = {
-                name: req.body.exerciseName,
-                description: req.body.description,
-                effortLevel: req.body.effortLevel,
-                duration: req.body.duration,
-                equipmentNeeded: req.body.equipment,
-                videoLink: videoLink,
-                courtArea: req.body.courtArea,
-                skillLevel: req.body.skillLevel,
-                positionFocus: req.body.position,
-                category: req.body.exerciseCategory,
-                reps: req.body.reps,
-                sets: req.body.sets,
-                restPeriod: req.body.restPeriod
-            } as IExercise;
+        var sets : ExerciseSet[]= (req.body.sets as ExerciseSet[]).map(set => ({
+            reps: Number(set.reps),
+            effortLevel: Number(set.effortLevel),
+            restPeriod: Number(set.restPeriod ?? 0),
+        }));
 
+        const totalReps = sets && req.body.sets.length > 0 ? sets.reduce((acc: number, set: any) => acc + set.reps, 0) : 0;
+
+        const totalSets = sets && req.body.sets.length > 0 ? sets.length : 0;
+
+        const effortLevel = sets && req.body.sets.length > 0 ? (sets.reduce((acc: number, set: any) => acc + set.effortLevel, 0) / sets.length).toFixed(2) : 0;
+
+        const equipmentNeeded = (req.body.equipment as Equipment[]).map(equipment => getEnumValue({ enumType: Equipment, key: equipment }));
+
+        const exerciseCategories = (req.body.exerciseCategories as ExerciseCategory[]).map(category => getEnumValue({ enumType: ExerciseCategory, key: category }));
+
+        const exercise = {
+            name: req.body.exerciseName,
+            description: req.body.description,
+            duration: req.body.duration,
+            equipmentNeeded: equipmentNeeded,
+            videoLink: videoLink,
+            effortLevel: effortLevel,
+            totalReps: totalReps,
+            totalSets: totalSets,
+            courtArea: getEnumValue({ enumType: CourtArea, key: req.body.courtArea }),
+            skillLevel:req.body.skillLevel,
+            positionFocus: getEnumValue({ enumType: Position, key: req.body.position }),
+            sets: sets,
+            categories: exerciseCategories,
+        } as IExercise;
+
+        console.log(exercise)
             try {
                 console.log(exercise)
                 const newExercise = await Exercise.create(exercise);

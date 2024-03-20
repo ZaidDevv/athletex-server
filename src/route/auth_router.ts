@@ -182,8 +182,4 @@ AuthRouter.post(`/register`, AuthController.register);
 AuthRouter.post(`/refresh`, AuthController.refreshToken);
 
 
-AuthRouter.get(`/login`, (req, res) => {
-    return res.sendFile(path.join(__dirname, '..', 'form', 'login.html'));
-});
-
 export default AuthRouter;

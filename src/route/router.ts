@@ -7,24 +7,20 @@ import path from 'path';
 import { authenticated } from '../middleware/middleware';
 import Exercise from '../model/exercise';
 import ExerciseRouter from './exercise_router';
+import DashboardRouter from './dashboard_router';
 
 // Create a new router
 const router = Router();
 
 const logger = wLogger({logName: 'router', level: 'silly'});
 
-// index route
-router.get('/', (req, res) => {
-    logger.info('Welcome to the athletex tracker API');
-    res.send('Welcome to the athletex tracker API');
-});
-router.get('/dashboard', authenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'form', 'dashboard.html'));
-});
+router.use('/', DashboardRouter);
+
 router.use(AUTH_PATH, AuthRouter);
 
 router.use(WORKOUT_RESOURCE, WorkoutRouter);
 
-router.use(EXERCISE_RESOURCE,ExerciseRouter)
+router.use(EXERCISE_RESOURCE,ExerciseRouter);
+
 
 export default router;

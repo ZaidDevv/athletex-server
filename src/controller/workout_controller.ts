@@ -1,4 +1,4 @@
-import { Equipment, ExerciseCategory, IResponseSchema, ResponseStatus, SkillLevel } from "../enums/common";
+import { Equipment, ExerciseCategory, IResponseSchema, Position, ResponseStatus, SkillLevel } from "../enums/common";
 import { Response,Request } from "express";
 import Exercise, { IExercise } from "../model/exercise";
 import Workout, { IWorkout } from "../model/workout";
@@ -86,23 +86,21 @@ async function produceWorkout(timeAllocated: number, exerciseCategories: Exercis
         const randomExercise = filteredExercises[randomIndex];
         workoutDuration += randomExercise.duration;
         if (workoutDuration <= timeAllocated) {
-            randomExercise.equipmentNeeded.forEach(equipment => equipments.add(equipment));
             workoutExercises.push(randomExercise);
-            randomExercise.positionFocus.forEach(position => {
-                workout.positionFocus = workout.positionFocus || [];
-                if (!workout.positionFocus.includes(position)) {
-                    workout.positionFocus.push(position);
-                }
-            });
+            randomExercise.equipmentNeeded.forEach(equipment => equipments.add(equipment));
         }
     }
-    console.log(workoutExercises);
     workout.exercises = workoutExercises;
     workout.duration = workoutDuration;
     workout.categories = exerciseCategories;
     // convert number to skillLevel
-    workout.skillLevel = getSkillLevelFromNumber(Math.round(workoutExercises.reduce((acc, exercise) => acc + Number(SkillLevel[exercise.skillLevel]), 0) / workoutExercises.length));
+    workout.skillLevel = getSkillLevelFromNumber(Math.round(workoutExercises.reduce((acc, exercise) => acc + Number(exercise.skillLevel.valueOf()), 0) / workoutExercises.length));
     workout.equipmentNeeded = Array.from(equipments);
+    workout.positionFocus = workoutExercises.reduce((acc, exercise) => {
+        acc.add(exercise.positionFocus);
+        return acc;
+    }, new Set<Position>()).size === 1 ? [Position.ALL] : [];
+
     return workout;
 }
 

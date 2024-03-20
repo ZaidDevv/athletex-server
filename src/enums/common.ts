@@ -17,12 +17,13 @@ export enum ExerciseCategory {
 }
 // Enum for the area of the court where the exercise is performed
 export enum CourtArea {
-    PAINT,
-    BASELINE ,
-    PERIMETER ,
-    HALF_COURT_LINE,
-    FREE_THROW_LINE ,
-    KEY_EXTENDED,
+    PAINT = "Paint",
+    BASELINE = "Baseline",
+    PERIMETER = "Perimeter",
+    HALF_COURT_LINE = "Half Court Line",
+    FREE_THROW_LINE = "Free Throw Line",
+    KEY_EXTENDED = "Key Extended",
+    ANY = "Any" // For exercises that can be performed anywhere on the court
 }
 
 
@@ -41,11 +42,11 @@ export enum Equipment {
 
 // Enum for the position focus of the exercise
 export enum Position{
-    POINT_GUARD,
-    POWER_FORWARD,
-    SHOOTING_GUARD,
-    CENTER,
-    ALL,
+    POINT_GUARD = "Point Guard",
+    POWER_FORWARD  = "Power Forward",
+    SHOOTING_GUARD = "Shooting Guard",
+    CENTER = "Center",
+    ALL = "All",
 }
 
 export enum SkillLevel {
@@ -67,4 +68,12 @@ export enum ResponseStatus {
     SUCCESS = "success",
     ERROR = "error",
     FAIL = "fail"
+}
+
+export function isValidKey({ key, enumType }: { key: string; enumType: any }): boolean {
+    return Object.keys(enumType).includes(key);
+}
+
+export function getEnumValue({ key, enumType }: { key: string; enumType: any }): any {
+    return enumType[key as keyof typeof enumType];
 }

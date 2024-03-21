@@ -1,6 +1,6 @@
 
 import express, { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { Jwt, JwtPayload } from 'jsonwebtoken';
 import {JWT_SECRET,  } from '../settings';
 import { IResponseSchema, ResponseStatus } from '../enums/common';
 
@@ -15,30 +15,40 @@ middlewareRouter.use((req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-// Middleware to check if the request is authenticated
-export const authenticated = ((req: Request, res: Response, next: NextFunction) => {
+// Middleware to check if the request is authenticated and optionally if the user is an admin
+export const authenticated = (requireAdmin: boolean = false) => (req: Request, res: Response, next: NextFunction) => {
     let response: IResponseSchema;
     let token: string | undefined;
 
     if (req.headers.authorization) {
         token = req.headers.authorization.split(' ')[1];
-    } else if (req.query.token) {
-        token = req.query.token as string;
+    } else if (req.cookies.token) {
+        console.log(req.cookies.token)
+        token = req.cookies.token as string;
     }
+
     if (token) {
         try {
             // verify the token
-            const verified = jwt.verify(token, JWT_SECRET);
-
-            if (!verified) {
+            const verified = jwt.verify(token, JWT_SECRET) as JwtPayload | undefined;
+            if (!verified && !requireAdmin) {
                 response = {
                     status: ResponseStatus.FAIL,
                     message: 'Unauthorized, Token is invalid or has expired!',
                 };
                 res.status(401).json(response);
-                return;
+                return ;
+            } 
+            else if (!verified || (requireAdmin && !verified.data.isAdmin)) {
+                response = {
+                    status: ResponseStatus.FAIL,
+                    message: 'Forbidden, Token is invalid or has expired, or user is not an admin!',
+                };
+                res.status(403).json(response);
+                return ;
             }
-            
+            // store the user in the request object
+            req.cookies.user = verified.data;        
             next();
         }
         catch (e) {
@@ -56,6 +66,6 @@ export const authenticated = ((req: Request, res: Response, next: NextFunction) 
         };
         return res.status(401).json(response);
     }
-});
+};
 
 export default middlewareRouter;

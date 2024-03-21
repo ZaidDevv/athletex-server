@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
         if (!fs.existsSync(path.join(process.cwd(),'src','public', 'uploads'))) {
             // make both the directory and any necessary subdirectories
             fs.mkdirSync(path.join(process.cwd(), "src",'public', 'uploads'), { recursive: true });
-        }
+        } 
         cb(null, path.join(process.cwd(), "src",'public', 'uploads'));
     },
     filename: (req, file, cb) => {

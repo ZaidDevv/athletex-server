@@ -182,4 +182,6 @@ AuthRouter.post(`/register`, AuthController.register);
 AuthRouter.post(`/refresh`, AuthController.refreshToken);
 
 
+AuthRouter.post(`/logout`, AuthController.logout);
+
 export default AuthRouter;

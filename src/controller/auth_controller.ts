@@ -53,10 +53,10 @@ export class AuthController {
             }
 
             const accessToken: string = jwt.sign({
-                data: { 'username': user.username, 'email': user.email, 'isRefreshToken': false}
+                data: { "_id": user._id,'username': user.username, "isAdmin": user.isAdmin,'email': user.email, 'isRefreshToken': false}
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
 
-            const refreshToken: string = jwt.sign({ data: { 'username': user.username, 'email': user.email, 'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
+            const refreshToken: string = jwt.sign({ "_id": user._id, data: { 'username': user.username, "isAdmin": user.isAdmin, 'email': user.email, 'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 
             response = {
                 status: ResponseStatus.SUCCESS,
@@ -74,9 +74,14 @@ export class AuthController {
                     },
                 }
             } as IResponseSchema;
-            logger.info('Login successful');
-            logger.info(response);
+            // if the request is not an api request, set cookie and redirect to dashboard     
+            if(req.headers.referer && !req.headers.referer.includes('api')){
+                // set cookie and override old if it exists : 
+                res.cookie('token', accessToken, { httpOnly: true });
+            }
+
             return res.status(200).json(response);
+        
         } catch (error) {
             const message = (error instanceof Error) ? error.message : 'An unknown error occurred';
             response = {
@@ -101,12 +106,6 @@ export class AuthController {
             return res.status(422).json(response);
         }
         try {
-            const accessToken: string = jwt.sign({
-                data: { 'username': req.body.username, 'email': req.body.email,'isRefreshToken': false }
-            }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
-
-            const refreshToken: string = jwt.sign({ data: { 'username': req.body.username, 'email': req.body.email,'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
-
             const user = await User.create({
                 fullName: req.body.fullName,
                 email: req.body.email,
@@ -114,6 +113,12 @@ export class AuthController {
                 username: req.body.username,
                 password: req.body.password,
             });
+
+            const accessToken: string = jwt.sign({
+                data: {  "_id": user._id, 'username': req.body.username, "isAdmin": false,'email': req.body.email,'isRefreshToken': false }
+            }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
+
+            const refreshToken: string = jwt.sign({  "_id": user._id, data: { 'username': req.body.username,"isAdmin": false, 'email': req.body.email,'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 
             response = {
                 status: ResponseStatus.SUCCESS,
@@ -164,11 +169,11 @@ export class AuthController {
                 throw new jwt.JsonWebTokenError('Refresh token passed instead of access token');
             }
             const accessToken: string = jwt.sign({
-                data: { 'username': verified.data.username, 'email': verified.data.email,'isRefreshToken': false }
+                data: { "_id": verified.data._id,'username': verified.data.username, "isAdmin": verified.data.isAdmin,'email': verified.data.email,'isRefreshToken': false }
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
 
             const refreshToken: string = jwt.sign(
-                { data: { 'username': verified.data.username, 'email': verified.data.email,'isRefreshToken': true } },
+                { data: { "_id":verified.data._id,'username': verified.data.username, 'email': verified.data.email, "isAdmin": verified.data.isAdmin,'isRefreshToken': true } },
                 JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 
             response = {
@@ -198,6 +203,26 @@ export class AuthController {
             }
             logger.warn(response.message);
 
+            return res.status(500).json(response);
+        }
+    }
+
+    static async logout(req: Request, res: Response) {
+        try {
+            res.clearCookie('token');
+            const response: IResponseSchema = {
+                status: ResponseStatus.SUCCESS,
+                message: 'User logged out successfully',
+            };
+            logger.info(response.message);
+            return res.status(200).json(response);
+        } catch (error) {
+            const message = (error instanceof Error) ? error.message : 'An unknown error occurred';
+            const response: IResponseSchema = {
+                status: ResponseStatus.ERROR,
+                message: message,
+            };
+            logger.error(response.message);
             return res.status(500).json(response);
         }
     }

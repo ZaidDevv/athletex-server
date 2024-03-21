@@ -1,7 +1,6 @@
 import winston from 'winston';
 import fs from 'fs';
 
-console.log("asdasd")
 if (!fs.existsSync('logs')) {
   fs.mkdirSync('logs', { recursive: true });
 }

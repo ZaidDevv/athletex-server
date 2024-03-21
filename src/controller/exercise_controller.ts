@@ -6,18 +6,35 @@ import { CourtArea, Equipment, ExerciseCategory, IResponseSchema, Position, Resp
 import upload from '../middleware/multer';
 import { HOST, PORT } from '../settings';
 import path from 'path';
-
 export class ExerciseController {
     static insertExercise = [
         upload.single('videoFile'),
         async (req: express.Request, res: express.Response) => {
-        console.log(req.body); // Log the request body to see what properties are being sent
         const videoFile = req.file && typeof req.file === 'object' ? req.file : undefined;
         if (!videoFile) {
-            res.status(422).json({ status: ResponseStatus.ERROR, message: 'Video file is required' } as IResponseSchema);
-            return;
+            return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Video file is required' } as IResponseSchema);   
         }
-
+        if (!req.body.exerciseName) {
+            return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Exercise name is required' } as IResponseSchema);
+        }
+        if (!req.body.duration) {
+            return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Duration is required' } as IResponseSchema);
+        }
+        if (!req.body.sets) {
+            return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Sets are required' } as IResponseSchema);
+        }
+        if (!req.body.skillLevel) {
+            return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Skill level is required' } as IResponseSchema);
+        }
+        if (!req.body.position) {
+            return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Focus Position is required' } as IResponseSchema);
+        }
+        if(!req.body.categories){
+            return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Categories are required' } as IResponseSchema);
+        }
+        if(!req.body.equipment){
+            return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Equipment is required' } as IResponseSchema);
+        }
         // Don't remove 'src' from the path
         req.file = { ...videoFile, path: videoFile.path };
 
@@ -38,17 +55,21 @@ export class ExerciseController {
             effortLevel: Number(set.effortLevel),
             restPeriod: Number(set.restPeriod ?? 0),
         }));
-
         const totalReps = sets && req.body.sets.length > 0 ? sets.reduce((acc: number, set: any) => acc + set.reps, 0) : 0;
 
         const totalSets = sets && req.body.sets.length > 0 ? sets.length : 0;
 
         const effortLevel = sets && req.body.sets.length > 0 ? (sets.reduce((acc: number, set: any) => acc + set.effortLevel, 0) / sets.length).toFixed(2) : 0;
 
-        const equipmentNeeded = (req.body.equipment as Equipment[]).map(equipment => getEnumValue({ enumType: Equipment, key: equipment }));
+        let equipmentNeeded: Equipment[] = [];
+        let exerciseCategories: ExerciseCategory[] = [];
 
-        const exerciseCategories = (req.body.exerciseCategories as ExerciseCategory[]).map(category => getEnumValue({ enumType: ExerciseCategory, key: category }));
+        req.body.equipment = [req.body.equipment]            
+        equipmentNeeded = (req.body.equipment as Equipment[]).map(equipment => getEnumValue({ enumType: Equipment, key: equipment }));
 
+        req.body.exerciseCategories = [req.body.exerciseCategories]
+        exerciseCategories = (req.body.exerciseCategories as ExerciseCategory[]).map(category => getEnumValue({ enumType: ExerciseCategory, key: category }));
+        
         const exercise = {
             name: req.body.exerciseName,
             description: req.body.description,
@@ -65,22 +86,28 @@ export class ExerciseController {
             categories: exerciseCategories,
         } as IExercise;
 
-        console.log(exercise)
             try {
-                console.log(exercise)
                 const newExercise = await Exercise.create(exercise);
-                res.status(201).json({ status: ResponseStatus.SUCCESS, data: newExercise } as IResponseSchema);
+                return res.status(201).json({ status: ResponseStatus.SUCCESS, data: newExercise } as IResponseSchema);
             } catch (e) {
                 const error = e as Error;
-                res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
+                return res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
             }
         }
     ];
 
     static async getExercises(req: express.Request, res: express.Response) {
         try {
-            const exercises = await Exercise.find();
-            res.status(200).json({ status: ResponseStatus.SUCCESS, data: exercises } as IResponseSchema);
+            // find and sort by date created
+            const sort = req.query.sort === 'asc' ? 1 : -1;
+            const sortBy = req.query.sortBy ? req.query.sortBy : 'createdAt';
+            const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+            var exercises = await Exercise.find().sort({ [sortBy as string]: sort });
+            // limit if found in req.query
+            if (limit) {
+                exercises = exercises.slice(0, limit);
+            }
+            res.json({ status: ResponseStatus.SUCCESS, data: exercises });
         } catch (e) {
             const error = e as Error;
             res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
@@ -90,56 +117,56 @@ export class ExerciseController {
     static async getExercise(req: express.Request, res: express.Response) {
         try {
             if(!req.params.id){
-                res.status(422).json({ status: ResponseStatus.ERROR, message: 'Exercise ID is required' } as IResponseSchema);
-                return;
+                
+                return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Exercise ID is required' } as IResponseSchema);
+
             }
             const exercise = await Exercise.findById(req.params.id);
             if (!exercise) {
-                res.status(404).json({ status: ResponseStatus.ERROR, message: 'Exercise not found' } as IResponseSchema);
-                return;
+                return res.status(404).json({ status: ResponseStatus.ERROR, message: 'Exercise not found' } as IResponseSchema);
+                
             }
-            res.status(200).json({ status: ResponseStatus.SUCCESS, data: exercise } as IResponseSchema);
+            return res.status(200);
         } catch (e) {
             const error = e as Error;
-            res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
+            return res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
         }
     }
 
     static async updateExercise(req: express.Request, res: express.Response) {
         try {
             if(!req.params.id){
-                res.status(422).json({ status: ResponseStatus.ERROR, message: 'Exercise ID is required' } as IResponseSchema);
-                return;
+                return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Exercise ID is required' } as IResponseSchema);
             }
             const exercise = await Exercise.findById(req.params.id);
             if (!exercise) {
-                res.status(404).json({ status: ResponseStatus.ERROR, message: 'Exercise not found' } as IResponseSchema);
-                return;
+                return res.status(404).json({ status: ResponseStatus.ERROR, message: 'Exercise not found' } as IResponseSchema);
+                
             }
             const updatedExercise = await Exercise.findByIdAndUpdate(req.params.id, req.body, { new: true });
-            res.status(200).json({ status: ResponseStatus.SUCCESS, data: updatedExercise } as IResponseSchema);
+            return res.status(200).json({ status: ResponseStatus.SUCCESS, data: updatedExercise } as IResponseSchema);
         } catch (e) {
             const error = e as Error;
-            res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
+            return res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
         }
     }
 
     static async deleteExercise(req: express.Request, res: express.Response) {
         try {
             if(!req.params.id){
-                res.status(422).json({ status: ResponseStatus.ERROR, message: 'Exercise ID is required' } as IResponseSchema);
-                return;
+                return res.status(422).json({ status: ResponseStatus.ERROR, message: 'Exercise ID is required' } as IResponseSchema);
+                
             }
             const exercise = await Exercise.findById(req.params.id);
             if (!exercise) {
-                res.status(404).json({ status: ResponseStatus.ERROR, message: 'Exercise not found' } as IResponseSchema);
-                return;
+                return res.status(404).json({ status: ResponseStatus.ERROR, message: 'Exercise not found' } as IResponseSchema);
+                
             }
             await Exercise.findByIdAndDelete(req.params.id);
-            res.status(200).json({ status: ResponseStatus.SUCCESS, message: 'Exercise deleted' } as IResponseSchema);
+            return res.status(200).json({ status: ResponseStatus.SUCCESS, message: 'Exercise deleted' } as IResponseSchema);
         } catch (e) {
             const error = e as Error;
-            res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
+            return res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
         }
     }
 }

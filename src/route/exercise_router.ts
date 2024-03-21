@@ -1,8 +1,6 @@
 import express from "express";
 import { authenticated } from "../middleware/middleware";
 import { ExerciseController } from "../controller/exercise_controller";
-import Exercise from "../model/exercise";
-
 const ExerciseRouter = express.Router();
 
 /**
@@ -14,7 +12,7 @@ const ExerciseRouter = express.Router();
  *  $ref: '../docs/global.yaml#/components'
  */
 
-ExerciseRouter.use(authenticated);
+ExerciseRouter.use(authenticated(true));
 
 ExerciseRouter.post('/', ExerciseController.insertExercise);
 

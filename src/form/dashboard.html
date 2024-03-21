@@ -1,30 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
+    <style>
+        html, body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #36d1dc, #5b86e5);
+            margin: 0;
+            padding-top: 50px;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        i.fas {
+            width: 20px; 
+            height: 20px; 
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+        #error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: .75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+            position: fixed; /* Position it at a fixed spot on the screen */
+            top: 20px; /* 20px from the top */
+            left: 50%; /* Center it horizontally */
+            transform: translateX(-50%); /* Center it horizontally */
+            opacity: 0; /* Start invisible */
+            transition: opacity 0.5s ease; /* Animate the opacity */
+            font-family: 'Roboto', sans-serif; /* Use the same font as the rest of the page */
+            text-align: center; /* Center the text */
+            width: 80%; /* Take up 80% of the screen width */
+            max-width: 600px; /* But don't be wider than 600px */
+            z-index: 1000; /* Make sure it's on top of other elements */
+        }
+    </style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <style>
-        .exercise-list {
-            list-style-type: none;
-            padding: 0;
+    <title>Add Exercise</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/4b0f9d2f56.js" crossorigin="anonymous"></script>
+</head>
+<header>
+    <!-- Side bar -->
+    <div class="sidenav" style="height: 100%; width: 0; position: fixed; z-index: 1; top: 0; left: 0; overflow-x: hidden; transition: 0.5s; padding-top: 60px; display: flex; flex-direction: column; align-items: center;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" style="position: absolute; top: 20px; right: 20px; font-size: 36px; color: white; text-decoration: none;">&times;</a>
+        <a href="/dashboard/" style="color: white;font-weight: bold;  padding: 20px 8px 20px; text-decoration: none; display: flex; align-items: center;"><i class="fas fa-dashboard" style="margin-right: 10px;"></i> Dashboard</a>
+        <hr style="width: 80%; border-top: 1px solid white;">
+        <a href="/dashboard/add_exercise/" style="color: white; font-weight: bold; padding: 20px 8px 20px; text-decoration: none; display: flex; align-items: center;"><i class="fas fa-plus" style="margin-right: 10px;"></i> Add Exercise</a>
+        <hr style="width: 80%; border-top: 1px solid white;">
+        <a href="/dashboard/exercises/" style="color: white; font-weight: bold; padding: 20px 8px 20px; text-decoration: none; display: flex; align-items: center;"><i class="fas fa-basketball" style="margin-right: 10px;"></i> View Exercises</a>
+        <hr style="width: 80%; border-top: 1px solid white;">
+        <a href="/dashboard/workouts/" id="view-workouts-button" style="color: white; font-weight: bold; padding: 20px 8px 20px ; text-decoration: none; display: flex; align-items: center;"><i class="fa-solid fa-list-ul" style="margin-right: 10px;"></i>View Workouts</a>
+    </div>
+    <!--change to white color button  -->
+    <span style="font-size:30px;cursor:pointer; position: absolute; top: 20px; left: 20px; color: #fff;" onclick="openNav()">&#9776;</span>
+    <script>
+        function openNav() {
+            document.querySelector('.sidenav').style.width = '250px';
         }
-        .exercise-list li {
-            margin-bottom: 10px;
-            background-color: #f8f8f8;
-            padding: 10px;
-            border-radius: 5px;
+        function closeNav() {
+            document.querySelector('.sidenav').style.width = '0';
+        }
+    </script> 
+    <style>
+        .sidebar {
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
         }
     </style>
-</head>
+</header>
+
 <body>
-    <h1>Dashboard</h1>
-    <h2>Your Exercises</h2>
-    <ul class="exercise-list">
-        <li>Exercise 1</li>
-        <li>Exercise 2</li>
-        <li>Exercise 3</li>
-        <!-- Add more exercises as needed -->
-    </ul>
+    <div style="padding-bottom: 30px; display: flex; justify-content: center;">
+        <img src="https://i.imghippo.com/files/fjAaM1710361353.png" alt="Athletex logo" style="height: 120px; border: 1px solid #ffffff; border-radius: 50px; box-shadow: 2px 2px 3px rgba(0, 0, 5, 0.4);">
+    </div> 
+    <button id="logout-button" style="position: absolute; top: 20px; right: 20px; font-weight: bold; padding: 10px 20px; color: #fffffff0; cursor: pointer; font-size: 16px; display: flex; align-items: center;">
+        <i class="fas fa-sign-out-alt" style="margin-right: 5px;"></i><span>Logout</span>
+    </button>
+    <div id="error-message" style="display: block;"></div>
+
+    <div>
+        <!-- welcome user back-->
+        <h1 style="text-align: center; color: white; font-size: 30px; font-weight: bold; margin-bottom: 20px;">Welcome back!</h1>
+        <!-- recently generated workouts-->
+        <h2 style="text-align: center; color: white; font-size: 20px; font-weight: bold; margin-bottom: 20px;">Recently Generated Workouts</h2>
+        
+        <div class="workout-container" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
+
+        <h2 style="text-align: center; color: white; font-size: 20px; font-weight: bold; margin-bottom: 20px; margin-top: 20px;">Recently Added Exercises</h2>
+
+        <div class="exercises-container" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
+
+    </div>
 </body>
+
+<script>
+    document.getElementById('logout-button').addEventListener('click', function() {
+        localStorage.removeItem('accessToken');
+        fetch('/api/v1/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = '/login';
+            }
+        });
+    });
+
+// create a card for recently generated workouts
+const createWorkoutCard = (workout) => {
+    const workoutCard = document.createElement('div');
+    workoutCard.classList.add('card');
+    workoutCard.style.width = '18rem';
+    workoutCard.style.margin = '10px';
+    workoutCard.style.borderRadius = '10px'; // Add border radius
+    workoutCard.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)'; // Add box shadow
+    workoutCard.innerHTML = `
+        <div class="card-body">
+            <h5 class="card-title" style="display: flex; align-items: center;"><i class="fas fa-layer-group" style="margin-right: 5px;"></i>${workout.categories}</h5>
+            <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-clock" style="margin-right: 5px;"></i>${workout.duration}</p> <!-- Add clock icon -->
+            <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-basketball" style="margin-right: 5px;"></i>${workout.exercises.length} exercises</p> <!-- Add dumbbell icon -->
+            <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i>${workout.createdAt}</p> <!-- Add calendar icon -->
+            <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-box" style="margin-right: 5px;"></i>${workout.equipmentNeeded}</p> <!-- Add cogs icon -->
+        </div>
+    `;
+    return workoutCard;
+};
+// use createWorkoutCard to create a card for each workout
+const populateWorkouts = (workouts) => {
+    const workoutContainer = document.querySelector('.workout-container');
+    workouts.forEach(workout => {
+        const workoutCard = createWorkoutCard(workout);
+        workoutContainer.appendChild(workoutCard);
+    });
+};
+
+// use populateWorkouts to fetch and display the workouts
+const fetchWorkouts = async () => {
+    try {
+        const response = await fetch('/api/v1/workout?expand=1&limit=5', {
+            method: 'GET',
+        });
+        const body = await response.json();
+        if (body.status === 'success') {
+            populateWorkouts(body.data);
+        } else {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = data.message;
+            errorMessage.style.opacity = 1;
+            setTimeout(() => {
+                errorMessage.style.opacity = 0;
+            }, 5000);
+        }
+    } catch (error) {
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = 'An error occurred. Please try again later.';
+        errorMessage.style.opacity = 1;
+        setTimeout(() => {
+            errorMessage.style.opacity = 0;
+        }, 5000);
+    }
+};
+// fetch the workouts when the page loads
+fetchWorkouts();
+
+// create a card for recently added exercises
+const createExerciseCard = (exercise) => {
+    const exerciseCard = document.createElement('div');
+    exerciseCard.classList.add('card');
+    exerciseCard.style.width = '18rem';
+    exerciseCard.style.margin = '10px';
+    exerciseCard.style.borderRadius = '10px'; // Add border radius
+    exerciseCard.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)'; // Add box shadow
+    exerciseCard.innerHTML = `
+        <div class="card-body">
+        <div style="display: flex; align-items: center; padding: 5px;">
+            <i class="fas fa-basketball-ball" style="margin-right: 10px;"></i>
+            <p>${exercise.name}</p>
+        </div>
+        <div style="display: flex; align-items: center; padding: 5px;">
+            <i class="fas fa-layer-group" style="margin-right: 10px;"></i>
+            <ul style="list-style-type: none; padding-left: 0;">
+                ${exercise.categories.map(category => `<li style="margin-bottom: 5px; padding: 5px; border-radius: 5px; background-color: #f0f0f0;">${category}</li>`).join('')}
+            </ul>
+        </div>
+        <div style="display: flex; align-items: center; padding: 5px;">
+            <i class="fas fa-repeat" style="margin-right: 10px;"></i>
+            <p>${exercise.totalReps} Reps</p>
+        </div>
+        <div style="display: flex; align-items: center; padding: 5px;">
+            <i class="fas fa-list-ul" style="margin-right: 10px;"></i>
+            <p>${exercise.totalSets} Sets</p>
+        </div>
+        <div style="display: flex; align-items: center; padding: 5px;">
+            <i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>
+            <p>${exercise.createdAt}</p>
+        </div>
+    </div>
+    `;
+    return exerciseCard;
+};
+// use createExerciseCard to create a card for each exercise
+const populateExercises = (exercises) => {
+    const exerciseContainer = document.querySelector('.exercises-container');
+    exercises.forEach(exercise => {
+        const exerciseCard = createExerciseCard(exercise);
+        exerciseContainer.appendChild(exerciseCard);
+    });
+};
+
+// use populateExercises to fetch and display the exercises
+const fetchExercises = async () => {
+    try {
+        const response = await fetch('/api/v1/exercise?limit=5', {
+            method: 'GET',
+        });
+        const body = await response.json();
+        console.log(body)
+        if (body.status === 'success') {
+            populateExercises(body.data);
+        } else {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = data.message;
+            errorMessage.style.opacity = 1;
+            setTimeout(() => {
+                errorMessage.style.opacity = 0;
+            }, 5000);
+        }
+    } catch (error) {
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = 'An error occurred. Please try again later.';
+        errorMessage.style.opacity = 1;
+        setTimeout(() => {
+            errorMessage.style.opacity = 0;
+        }, 5000);
+    }
+};
+// fetch the exercises when the page loads
+fetchExercises();
+</script>
 </html>

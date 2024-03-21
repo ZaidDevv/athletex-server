@@ -4,8 +4,6 @@ import { WorkoutController } from '../controller/workout_controller';
 
 const WorkoutRouter = express.Router();
 
-WorkoutRouter.use(authenticated);
-
 /**
  * @swagger
  * tags:
@@ -53,7 +51,7 @@ WorkoutRouter.use(authenticated);
  *     security:
  *       - bearerAuth: []
  */
-WorkoutRouter.post(`/generate`, WorkoutController.generateWorkout);
+WorkoutRouter.post(`/generate`,authenticated(false), WorkoutController.generateWorkout);
 
 /**
  * @swagger
@@ -74,7 +72,7 @@ WorkoutRouter.post(`/generate`, WorkoutController.generateWorkout);
  *     security:
  *       - bearerAuth: []
  */
-WorkoutRouter.get(`/`, WorkoutController.getWorkouts);
+WorkoutRouter.get(`/`,authenticated(true),WorkoutController.getWorkouts);
 
 /**
  * @swagger
@@ -101,7 +99,7 @@ WorkoutRouter.get(`/`, WorkoutController.getWorkouts);
  *     security:
  *       - bearerAuth: []
  */
-WorkoutRouter.get(`/:id`, WorkoutController.getWorkoutById);
+WorkoutRouter.get(`/:id`, authenticated(false), WorkoutController.getWorkoutById);
 
 /**
  * @swagger
@@ -125,6 +123,6 @@ WorkoutRouter.get(`/:id`, WorkoutController.getWorkoutById);
  *     security:
  *       - bearerAuth: []
  */
-WorkoutRouter.delete(`/:id`, WorkoutController.deleteWorkout);
+WorkoutRouter.delete(`/:id`, authenticated(false), WorkoutController.deleteWorkout);
 
 export default WorkoutRouter;

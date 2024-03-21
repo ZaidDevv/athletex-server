@@ -70,10 +70,13 @@ export enum ResponseStatus {
     FAIL = "fail"
 }
 
-export function isValidKey({ key, enumType }: { key: string; enumType: any }): boolean {
+export function isValidKey({ key, enumType }: { key: any; enumType: any }): boolean {
     return Object.keys(enumType).includes(key);
 }
 
-export function getEnumValue({ key, enumType }: { key: string; enumType: any }): any {
+export function getEnumValue({ key, enumType }: { key: any; enumType: any }): any {
     return enumType[key as keyof typeof enumType];
+}
+export function getEnumKey({ value, enumType }: { value: any; enumType: any }): any {
+    return Object.keys(enumType).find(key => enumType[key as keyof typeof enumType] === value);
 }

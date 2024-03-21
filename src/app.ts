@@ -8,9 +8,11 @@ import connectToDatabase from "./driver/mongodb";
 import rateLimiterRouter from "./middleware/rate_limiter";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './docs/swagger';
-import { PORT } from "./settings";
+import { HOST, PORT } from "./settings";
 import { IResponseSchema, ResponseStatus } from "./enums/common";
 import path from 'path';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -34,6 +36,15 @@ app.use(morganRouter);
 
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Cookie Parser
+app.use(cookieParser());
+
+// Use CORS
+app.use(cors({
+    origin: HOST, // replace with your client's domain
+    credentials: true
+}));
 
 // Routes
 app.use(router);

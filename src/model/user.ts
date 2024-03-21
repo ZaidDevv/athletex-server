@@ -1,6 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 import bcrypt from 'bcryptjs';
+import { IWorkout } from './workout';
 
 export interface IUser extends Document {
     fullName: string;

@@ -150,6 +150,8 @@
         const password = document.querySelector('input[name="psw"]').value;
 
         // Send a POST request to the server
+        // this will redirect to the dashboard page if the login is successful
+
         fetch('/api/v1/auth/login', {
             method: 'POST',
             headers: {
@@ -157,28 +159,13 @@
             },
             body: JSON.stringify({ username, password }) // Send the form data as JSON
         })
-        .then(response => response.json()) // Parse the response as JSON
-        .then(data => {
-            // Handle the response data
+        .then(response => response.json())
+        .then(response => {
             var errorMessageDiv = document.getElementById('error-message');
-            if (data.status === 'success' && data.data !== undefined && data.data.user.isAdmin === true) {
-                let token = data.data.user.tokens.accessToken;
-                localStorage.setItem('accessToken', token);
-                fetch('/dashboard', {
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    },
-                    // other options...
-                }).then(response => {
-                    if(response.status === 200) {
-                        window.location.href = '/dashboard?token=' + encodeURIComponent(token);
-                    } else {
-                        errorMessageDiv.style.opacity = '1'; // Make it visible
-                        errorMessageDiv.textContent = data.message ?? 'You do not have permission to access this page';
-                    }
-                });
-
-            } else if(data.status === 'success' && data.data !== undefined && data.data.user.isAdmin === false) {
+            console.log(response)
+            if (response.status === 'success' && response.data.user.isAdmin === true) {
+                window.location.href = '/dashboard';
+            } else if(response.status === 'success' && response.data.user.isAdmin === false) {
                 errorMessageDiv.style.opacity = '1'; // Make it visible
                 errorMessageDiv.textContent = data.message ?? 'You do not have permission to access this page';
             } else {

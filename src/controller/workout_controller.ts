@@ -1,11 +1,12 @@
-import { Equipment, ExerciseCategory, IResponseSchema, Position, ResponseStatus, SkillLevel } from "../enums/common";
+import { Equipment, ExerciseCategory, IResponseSchema, Position, ResponseStatus, SkillLevel, getEnumValue } from "../enums/common";
 import { Response,Request } from "express";
 import Exercise, { IExercise } from "../model/exercise";
 import Workout, { IWorkout } from "../model/workout";
+import User from "../model/user";
 
 export class WorkoutController {
     static generateWorkout = async (req: Request, res: Response) => {
-        const { timeAllocated, exerciseCategories, isDetailed = false} = req.body;
+        const { timeAllocated, exerciseCategories} = req.body;
         let response: IResponseSchema;
 
         if (!timeAllocated || !exerciseCategories) {
@@ -17,10 +18,11 @@ export class WorkoutController {
             return;
         }
         try{
-            const workout = await produceWorkout(timeAllocated, exerciseCategories);
+            var workout = await produceWorkout(timeAllocated, exerciseCategories);
+            workout.user = req.cookies.user._id;
             const newWorkout = await Workout.create(workout);
 
-            if(isDetailed){
+            if(req.query.expand && req.query.expand === '1'){
                 await Workout.populate(newWorkout, { path: 'exercises' });
             }
             res.json({ status: ResponseStatus.SUCCESS, data: newWorkout } as IResponseSchema);
@@ -32,7 +34,20 @@ export class WorkoutController {
     };
     static getWorkouts = async (req: Request, res: Response) => {
         try {
-            const workouts = await Workout.find();
+            // find and sort by date created
+            const sort = req.query.sort === 'asc' ? 1 : -1;
+            const sortBy = req.query.sortBy ? req.query.sortBy : 'createdAt';
+            const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+            var workouts = await Workout.find().sort({ [sortBy as string]: sort });
+            // limit if found in req.query
+            if (limit) {
+                workouts = workouts.slice(0, limit);
+            }
+            // expand if in query params 
+            if(req.query.expand && req.query.expand === '1'){
+                await Workout.populate(workouts, [{ path: 'exercises' }, { path: 'user' }]);
+            }
+            console.log(workouts.length)
             res.json({ status: ResponseStatus.SUCCESS, data: workouts });
         } catch (e) {
             const error = e as Error;
@@ -70,7 +85,7 @@ export class WorkoutController {
 }
 
 async function produceWorkout(timeAllocated: number, exerciseCategories: ExerciseCategory[]): Promise<IWorkout> {
-    const filteredExercises: IExercise[] = await Exercise.find({ category: { $in: exerciseCategories } });
+    const filteredExercises = await Exercise.find({ categories: { $in: exerciseCategories } });
     if(filteredExercises.length === 0){
         throw new Error("No exercises found for the given categories");
     }
@@ -78,8 +93,7 @@ async function produceWorkout(timeAllocated: number, exerciseCategories: Exercis
 
     let workoutDuration = 0;
     let workoutExercises: IExercise[] = [];
-    // set for equipments needed
-    const equipments = new Set<Equipment>();
+
 
     while (workoutDuration < timeAllocated) {
         const randomIndex = Math.floor(Math.random() * filteredExercises.length);
@@ -87,29 +101,27 @@ async function produceWorkout(timeAllocated: number, exerciseCategories: Exercis
         workoutDuration += randomExercise.duration;
         if (workoutDuration <= timeAllocated) {
             workoutExercises.push(randomExercise);
-            randomExercise.equipmentNeeded.forEach(equipment => equipments.add(equipment));
         }
     }
+    const skillLevel = Math.round(workoutExercises.reduce((acc: number, exercise: IExercise) => acc + getEnumValue({key:exercise.skillLevel,enumType:SkillLevel},), 0) / workoutExercises.length);
+    workout.skillLevel = getEnumValue({key:skillLevel,enumType:SkillLevel});
+    workout.duration = workoutExercises.reduce((acc: number, exercise: IExercise) => acc + exercise.duration, 0);
+    // turn into set to remove duplicates
+    workout.equipmentNeeded = Array.from(new Set(workoutExercises.reduce((acc: Equipment[], exercise: IExercise) => {
+        if(exercise.equipmentNeeded.includes(Equipment.NONE)){
+            return acc;
+        }
+        return acc.concat(exercise.equipmentNeeded);
+    }, [])));
+    
+    workout.positionFocus = Array.from(new Set(workoutExercises.reduce((acc: Position[], exercise: IExercise) => {
+        return acc.concat(exercise.positionFocus);
+    }, []))).filter((pos) => pos !== null && pos !== undefined).slice(0, 3);
+    
+    workout.categories = Array.from(new Set(workoutExercises.reduce((acc: ExerciseCategory[], exercise: IExercise) => {
+        return acc.concat(exercise.categories);
+    }, [])));
+    
     workout.exercises = workoutExercises;
-    workout.duration = workoutDuration;
-    workout.categories = exerciseCategories;
-    // convert number to skillLevel
-    workout.skillLevel = getSkillLevelFromNumber(Math.round(workoutExercises.reduce((acc, exercise) => acc + Number(exercise.skillLevel.valueOf()), 0) / workoutExercises.length));
-    workout.equipmentNeeded = Array.from(equipments);
-    workout.positionFocus = workoutExercises.reduce((acc, exercise) => {
-        acc.add(exercise.positionFocus);
-        return acc;
-    }, new Set<Position>()).size === 1 ? [Position.ALL] : [];
-
     return workout;
 }
-
-function getSkillLevelFromNumber(value: number): SkillLevel {
-    const keys = Object.keys(SkillLevel);
-    for (let key of keys) {
-      if (SkillLevel[key as keyof typeof SkillLevel] == value) {
-        return key as unknown as SkillLevel;
-      }
-    }
-    throw new Error('Invalid skill level value');
-  }

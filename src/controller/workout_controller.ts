@@ -6,7 +6,7 @@ import User from "../model/user";
 
 export class WorkoutController {
     static generateWorkout = async (req: Request, res: Response) => {
-        const { timeAllocated, exerciseCategories} = req.body;
+        const { timeAllocated, exerciseCategories, equipmentNeeded} = req.body;
         let response: IResponseSchema;
 
         if (!timeAllocated || !exerciseCategories) {
@@ -18,7 +18,7 @@ export class WorkoutController {
             return;
         }
         try{
-            var workout = await produceWorkout(timeAllocated, exerciseCategories);
+            var workout = await produceWorkout(timeAllocated, exerciseCategories, equipmentNeeded);
             workout.user = req.cookies.user._id;
             const newWorkout = await Workout.create(workout);
 
@@ -29,7 +29,13 @@ export class WorkoutController {
             return;
         } catch (e) {
             const error = e as Error;
-            res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
+            if(error.message === "No exercises found for the given categories"){
+                res.status(404).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
+            }
+            else{
+                res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
+            
+            }
         }
     };
     static getWorkouts = async (req: Request, res: Response) => {
@@ -47,7 +53,6 @@ export class WorkoutController {
             if(req.query.expand && req.query.expand === '1'){
                 await Workout.populate(workouts, [{ path: 'exercises' }, { path: 'user' }]);
             }
-            console.log(workouts.length)
             res.json({ status: ResponseStatus.SUCCESS, data: workouts });
         } catch (e) {
             const error = e as Error;
@@ -84,8 +89,18 @@ export class WorkoutController {
     };
 }
 
-async function produceWorkout(timeAllocated: number, exerciseCategories: ExerciseCategory[]): Promise<IWorkout> {
-    const filteredExercises = await Exercise.find({ categories: { $in: exerciseCategories } });
+async function produceWorkout(timeAllocated: number, exerciseCategories: ExerciseCategory[], equipmentNeeded: Equipment[]): Promise<IWorkout> {
+    let query: any = {};
+
+    if (exerciseCategories) {
+        query.categories = { $in: exerciseCategories };
+    }
+    
+    if (equipmentNeeded) {
+        query.equipmentNeeded = { $in: equipmentNeeded };
+    }
+    
+    const filteredExercises = await Exercise.find(query);
     if(filteredExercises.length === 0){
         throw new Error("No exercises found for the given categories");
     }

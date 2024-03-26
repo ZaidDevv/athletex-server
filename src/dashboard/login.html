@@ -162,7 +162,6 @@
         .then(response => response.json())
         .then(response => {
             var errorMessageDiv = document.getElementById('error-message');
-            console.log(response)
             if (response.status === 'success' && response.data.user.isAdmin === true) {
                 window.location.href = '/dashboard';
             } else if(response.status === 'success' && response.data.user.isAdmin === false) {

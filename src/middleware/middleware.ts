@@ -23,7 +23,6 @@ export const authenticated = (requireAdmin: boolean = false) => (req: Request, r
     if (req.headers.authorization) {
         token = req.headers.authorization.split(' ')[1];
     } else if (req.cookies.token) {
-        console.log(req.cookies.token)
         token = req.cookies.token as string;
     }
 

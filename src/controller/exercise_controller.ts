@@ -61,15 +61,18 @@ export class ExerciseController {
 
         const effortLevel = sets && req.body.sets.length > 0 ? (sets.reduce((acc: number, set: any) => acc + set.effortLevel, 0) / sets.length).toFixed(2) : 0;
 
-        let equipmentNeeded: Equipment[] = [];
-        let exerciseCategories: ExerciseCategory[] = [];
+        let equipmentNeeded = (req.body.equipment as Equipment[]).map(equipment => getEnumValue({ enumType: Equipment, key: equipment }));
 
-        req.body.equipment = [req.body.equipment]            
-        equipmentNeeded = (req.body.equipment as Equipment[]).map(equipment => getEnumValue({ enumType: Equipment, key: equipment }));
+        req.body.categories = req.body.categories.map((category: string) => category.trim());
 
-        req.body.exerciseCategories = [req.body.exerciseCategories]
-        exerciseCategories = (req.body.exerciseCategories as ExerciseCategory[]).map(category => getEnumValue({ enumType: ExerciseCategory, key: category }));
-        
+        let exerciseCategories = (req.body.categories as ExerciseCategory[]).map(category => {
+            let enumValue = getEnumValue({ enumType: ExerciseCategory, key: category });
+            if (enumValue === undefined) {
+                console.log(`Key '${category}' not found in ExerciseCategory enum`);
+            }
+            return enumValue;
+        });
+
         const exercise = {
             name: req.body.exerciseName,
             description: req.body.description,

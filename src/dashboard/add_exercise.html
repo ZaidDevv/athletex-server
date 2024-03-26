@@ -283,7 +283,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-sm fa-layer-group"></i></span>
                             </div>
-                            <select class="form-control" required multiple name="exerciseCategories" id="exerciseCategory" style="height: 320px;">
+                            <select class="form-control" required multiple name="categories" id="exerciseCategory" style="height: 320px;">
                                 <option value="" disabled="true" selected>Exercise Category</option>
                                 <option value="SHOOTING">Shooting</option>
                                 <option value="DRIBBLING">Dribbling</option>
@@ -497,7 +497,6 @@ function submitForm() {
         })
         .then(response => response.json())
         .then(response => {
-            console.log(response)
             if(response.status === "success") {
                 alert('Exercise added successfully');
             } else {

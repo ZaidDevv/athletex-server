@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        html, body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #36d1dc, #5b86e5);
+            margin: 0;
+            padding-top: 50px;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        i.fas {
+            width: 20px; 
+            height: 20px; 
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+        #error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: .75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+            position: fixed; /* Position it at a fixed spot on the screen */
+            top: 20px; /* 20px from the top */
+            left: 50%; /* Center it horizontally */
+            transform: translateX(-50%); /* Center it horizontally */
+            opacity: 0; /* Start invisible */
+            transition: opacity 0.5s ease; /* Animate the opacity */
+            font-family: 'Roboto', sans-serif; /* Use the same font as the rest of the page */
+            text-align: center; /* Center the text */
+            width: 80%; /* Take up 80% of the screen width */
+            max-width: 600px; /* But don't be wider than 600px */
+            z-index: 1000; /* Make sure it's on top of other elements */
+        }
+        .table-container {
+        display: flex;
+        justify-content: center;
+        }
+        .table {
+            width: 60%;
+            border-collapse: separate; /* Use separate to allow border-radius */
+            border-spacing: 0; /* Remove cell spacing */
+            border: 1px solid #E8E7E6; /* Add border to table */
+            border-radius: 10px; /* Add rounded corners */
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            padding: 8px;
+        }
+        .table th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #3b3a38;
+            color: white;
+        }
+        .table tr {
+            background-color: white;
+        }
+        .table tr:hover {
+            background-color: #5b86e5;
+        }
+        .table th {
+            background-color: #3b3a38;
+            color: white;
+        }
+        .icon-text {
+        display: flex;
+        align-items: center;
+        padding: 5px;
+        }
+        /* Add space between the icon and text */
+        .icon-text i {
+            margin-right: 5px;
+        }
+        .icon-button {
+    display: inline-block;
+    color: #3b3a38;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px; /* Reduce this value */
+    margin-right: 2px; /* Add this line */
+}
+
+.icon-button:last-child {
+    margin-right: 0; /* Add this line */
+}
+
+.icon-button:hover {
+    background-color: #3b3a38;
+    color: white;
+}
+            
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercises</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/4b0f9d2f56.js" crossorigin="anonymous"></script>
+</head>
+<header>
+    <!-- Side bar -->
+    <div class="sidenav" style="height: 100%; width: 0; position: fixed; z-index: 1; top: 0; left: 0; overflow-x: hidden; transition: 0.5s; padding-top: 60px; display: flex; flex-direction: column; align-items: center;">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" style="position: absolute; top: 20px; right: 20px; font-size: 36px; color: white; text-decoration: none;">&times;</a>
+        <a href="/dashboard/" style="color: white;font-weight: bold;  padding: 20px 8px 20px; text-decoration: none; display: flex; align-items: center;"><i class="fas fa-dashboard" style="margin-right: 10px;"></i> Dashboard</a>
+        <hr style="width: 80%; border-top: 1px solid white;">
+        <a href="/dashboard/add_exercise/" style="color: white; font-weight: bold; padding: 20px 8px 20px; text-decoration: none; display: flex; align-items: center;"><i class="fas fa-plus" style="margin-right: 10px;"></i> Add Exercise</a>
+        <hr style="width: 80%; border-top: 1px solid white;">
+        <a href="/dashboard/exercises/" style="color: white; font-weight: bold; padding: 20px 8px 20px; text-decoration: none; display: flex; align-items: center;"><i class="fas fa-basketball" style="margin-right: 10px;"></i> View Exercises</a>
+        <hr style="width: 80%; border-top: 1px solid white;">
+        <a href="/dashboard/workouts/" id="view-workouts-button" style="color: white; font-weight: bold; padding: 20px 8px 20px ; text-decoration: none; display: flex; align-items: center;"><i class="fa-solid fa-list-ul" style="margin-right: 10px;"></i>View Workouts</a>
+    </div>
+    <!--change to white color button  -->
+    <span style="font-size:30px;cursor:pointer; position: absolute; top: 20px; left: 20px; color: #fff;" onclick="openNav()">&#9776;</span>
+    <script>
+        function openNav() {
+            document.querySelector('.sidenav').style.width = '250px';
+        }
+        function closeNav() {
+            document.querySelector('.sidenav').style.width = '0';
+        }
+    </script> 
+    <style>
+        .sidebar {
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</header>
+
+<body>
+    <div style="padding-bottom: 30px; display: flex; justify-content: center;">
+        <img src="https://i.imghippo.com/files/fjAaM1710361353.png" alt="Athletex logo" style="height: 120px; border: 1px solid #ffffff; border-radius: 50px; box-shadow: 2px 2px 3px rgba(0, 0, 5, 0.4);">
+    </div> 
+    <button id="logout-button" style="position: absolute; top: 20px; right: 20px; font-weight: bold; padding: 10px 20px; color: #fffffff0; cursor: pointer; font-size: 16px; display: flex; align-items: center;">
+        <i class="fas fa-sign-out-alt" style="margin-right: 5px;"></i><span>Logout</span>
+    </button>
+    <div id="error-message" style="display: block;"></div>
+
+    <div class="table-container">
+        <table class="table">
+            <!-- table headers -->
+            <thead>
+                <tr>
+                    <th><span class="icon-text"><i class="fas fa-basketball"></i> Name</span></th>
+                    <th><span class="icon-text"><i class="fas fa-info-circle"></i> Description</span></th>
+                    <th><span class="icon-text"><i class="fas fa-clock"></i> Duration</span></th>
+                    <th><span class="icon-text"><i class="fas fa-dumbbell"></i> Effort Level</span></th>
+                    <th><span class="icon-text"><i class="fa-solid fa-arrow-up-wide-short"></i> Skill Level</span></th>
+                    <th><span class="icon-text"><i class="fas fa-list-ul"></i> Total Sets</span></th>
+                    <th><span class="icon-text"><i class="fas fa-cogs"></i> Action</span></th>
+                </tr>
+            </thead>
+            <tbody id="exercises-body">
+                <!-- table body will be filled by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</body>
+
+<script>
+    document.getElementById('logout-button').addEventListener('click', function() {
+        fetch('/api/v1/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = '/login';
+            }
+        });
+    });
+   // fetch the exercises and add them to the table
+   fetch('/api/v1/exercise?limit=50', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }).then(response => response.json()).then(body => {
+        const tbody = document.getElementById('exercises-body');
+        body.data.forEach(exercise => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${exercise.name}</td>
+                <td>${exercise.description}</td>
+                <td>${exercise.duration}</td>
+                <td>${exercise.effortLevel}</td>
+                <td>${exercise.skillLevel}</td>
+                <td>${exercise.sets.length}</td>
+                <td>
+                    <a href="/dashboard/exercise/${exercise.id}" class="icon-button">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </td>
+                <td>
+                    <a href="/dashboard/edit_exercise/${exercise.id}" class="icon-button">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+                <td>
+                    <a href="/dashboard/delete_exercise/${exercise.id}" class="icon-button">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    });
+</script>
+</html>

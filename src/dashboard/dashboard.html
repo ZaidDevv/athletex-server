@@ -43,7 +43,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Exercise</title>
+    <title>Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/4b0f9d2f56.js" crossorigin="anonymous"></script>
@@ -125,13 +125,19 @@ const createWorkoutCard = (workout) => {
     workoutCard.style.borderRadius = '10px'; // Add border radius
     workoutCard.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)'; // Add box shadow
     workoutCard.innerHTML = `
-        <div class="card-body">
-            <h5 class="card-title" style="display: flex; align-items: center;"><i class="fas fa-layer-group" style="margin-right: 5px;"></i>${workout.categories}</h5>
-            <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-clock" style="margin-right: 5px;"></i>${workout.duration}</p> <!-- Add clock icon -->
-            <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-basketball" style="margin-right: 5px;"></i>${workout.exercises.length} exercises</p> <!-- Add dumbbell icon -->
-            <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i>${workout.createdAt}</p> <!-- Add calendar icon -->
-            <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-box" style="margin-right: 5px;"></i>${workout.equipmentNeeded}</p> <!-- Add cogs icon -->
-        </div>
+    <div class="card-body" style="display: flex; flex-direction: column;">
+    <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-user" style="margin-right: 5px;"></i>${workout.user.username}</p>
+    <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-clock" style="margin-right: 5px;"></i>${workout.duration}</p>
+    <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-basketball" style="margin-right: 5px;"></i>${workout.exercises.length} exercises</p> 
+    <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-calendar-alt" style="margin-right: 5px;"></i>${workout.createdAt}</p> 
+    <p class="card-text" style="display: flex; align-items: center;"><i class="fas fa-box" style="margin-right: 5px;"></i>${workout.equipmentNeeded}</p> 
+    <div style="display: flex; align-items: center; padding: 5px;">
+        <i class="fas fa-layer-group" style="margin-right: 10px;"></i>
+        <ul style="list-style-type: none; padding-left: 0;">
+            ${workout.categories.map(category => `<li style="margin-bottom: 5px; padding: 5px; border-radius: 5px; background-color: #f0f0f0;">${category}</li>`).join('')}
+        </ul>
+    </div>
+    </div>
     `;
     return workoutCard;
 };
@@ -185,7 +191,7 @@ const createExerciseCard = (exercise) => {
         <div class="card-body">
         <div style="display: flex; align-items: center; padding: 5px;">
             <i class="fas fa-basketball-ball" style="margin-right: 10px;"></i>
-            <p>${exercise.name}</p>
+            <h1>${exercise.name}</h1>
         </div>
         <div style="display: flex; align-items: center; padding: 5px;">
             <i class="fas fa-layer-group" style="margin-right: 10px;"></i>
@@ -225,7 +231,6 @@ const fetchExercises = async () => {
             method: 'GET',
         });
         const body = await response.json();
-        console.log(body)
         if (body.status === 'success') {
             populateExercises(body.data);
         } else {

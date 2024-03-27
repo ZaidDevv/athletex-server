@@ -74,6 +74,23 @@ export class WorkoutController {
         }
     };
 
+    static getLastestUserWorkout = async (req: Request, res: Response) => {
+        try {
+            console.log(req.cookies.user)
+            const workout = await Workout.findOne({ user: req.cookies.user._id }).sort({ createdAt: -1 });
+            if (!workout) { 
+                res.status(404).json({ status: ResponseStatus.ERROR, message: "Workout not found" } as IResponseSchema);
+                return;
+            }
+            res.json({ status: ResponseStatus.SUCCESS, data: workout });
+
+        }
+        catch (e) {
+            const error = e as Error;
+            res.status(500).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
+        }
+    };
+
     static deleteWorkout = async (req: Request, res: Response) => {
         try {
             const workout = await Workout.findByIdAndDelete(req.params.id);
@@ -140,3 +157,6 @@ async function produceWorkout(timeAllocated: number, exerciseCategories: Exercis
     workout.exercises = workoutExercises;
     return workout;
 }
+
+
+export default WorkoutController;

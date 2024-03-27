@@ -74,6 +74,27 @@ WorkoutRouter.post(`/generate`,authenticated(false), WorkoutController.generateW
  */
 WorkoutRouter.get(`/`,authenticated(true),WorkoutController.getWorkouts);
 
+
+/**
+ * @swagger
+ * /api/v1/workout/latest:
+ *  get:
+ *   summary: Get the latest workout created by the user
+ *  tags:
+ *   - Workout
+ * responses:
+ *  200:
+ *    $ref: '#/components/responses/Success'
+ *  401:
+ *   $ref: '#/components/responses/Unauthorized'
+ * security:
+ * - bearerAuth: []
+ * 
+ */
+
+WorkoutRouter.get(`/latest`, authenticated(false), WorkoutController.getLastestUserWorkout);
+
+
 /**
  * @swagger
  * /api/v1/workout/{id}:
@@ -124,5 +145,7 @@ WorkoutRouter.get(`/:id`, authenticated(false), WorkoutController.getWorkoutById
  *       - bearerAuth: []
  */
 WorkoutRouter.delete(`/:id`, authenticated(false), WorkoutController.deleteWorkout);
+
+
 
 export default WorkoutRouter;

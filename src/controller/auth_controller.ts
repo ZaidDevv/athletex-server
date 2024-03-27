@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import { IResponseSchema, ResponseStatus } from '../enums/common';
 import wLogger from '../logger';
 import { level } from 'winston';
+import Workout from '../model/workout';
 
 const logger = wLogger({logName: 'AuthController', level: 'info'});
 export class AuthController {
@@ -226,4 +227,5 @@ export class AuthController {
             return res.status(500).json(response);
         }
     }
+
 }

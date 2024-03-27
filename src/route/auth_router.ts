@@ -182,6 +182,20 @@ AuthRouter.post(`/register`, AuthController.register);
 AuthRouter.post(`/refresh`, AuthController.refreshToken);
 
 
+/**
+ * @swagger
+ * /api/v1/auth/logout:
+ *  post:
+ *   tags:
+ *    - Authentication
+ *  summary: Log out a user.
+ * description: Log out a user by blacklisting their refresh token.
+ * requestBody:
+ * required: false
+ * 200:
+ * $ref: '#/components/responses/Success'
+ */
+
 AuthRouter.post(`/logout`, AuthController.logout);
 
 export default AuthRouter;

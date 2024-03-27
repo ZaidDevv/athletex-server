@@ -82,6 +82,9 @@ export class WorkoutController {
                 res.status(404).json({ status: ResponseStatus.ERROR, message: "Workout not found" } as IResponseSchema);
                 return;
             }
+            if(req.query.expand && req.query.expand === '1'){
+                await Workout.populate(workout, { path: 'exercises' });
+            }
             res.json({ status: ResponseStatus.SUCCESS, data: workout });
 
         }

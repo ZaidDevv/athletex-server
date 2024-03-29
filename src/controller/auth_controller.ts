@@ -228,4 +228,22 @@ export class AuthController {
         }
     }
 
+    static async identifyUser(req: Request, res: Response) {
+        let response: IResponseSchema;
+
+        if(req.cookies.user){
+            response = {
+                status: ResponseStatus.SUCCESS,
+                data: req.cookies.user
+            } as IResponseSchema;
+            return res.status(200).json(response);
+        }
+        response = {
+            status: ResponseStatus.ERROR,
+            message: "User not found"
+        } as IResponseSchema;
+        return res.status(404).json(response);
+    }
 }
+
+export default AuthController;

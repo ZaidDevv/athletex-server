@@ -9,7 +9,7 @@ export class WorkoutController {
         const { timeAllocated, exerciseCategories, equipmentNeeded} = req.body;
         let response: IResponseSchema;
 
-        if (!timeAllocated || !exerciseCategories) {
+        if (!timeAllocated) {
             response = {
                 status: ResponseStatus.ERROR,
                 message: "Invalid request body",
@@ -123,21 +123,22 @@ async function produceWorkout(timeAllocated: number, exerciseCategories: Exercis
     }
     let workout : IWorkout = {} as IWorkout;
 
-    let workoutDuration = 0;
+    let workoutDuration: number = 0;
     let workoutExercises: IExercise[] = [];
-
 
     while (workoutDuration < timeAllocated) {
         const randomIndex = Math.floor(Math.random() * filteredExercises.length);
         const randomExercise = filteredExercises[randomIndex];
         workoutDuration += randomExercise.duration;
+        workoutDuration += randomExercise.sets.reduce((acc: number, set: any) => acc + (set.restPeriod || 0), 0);
         if (workoutDuration <= timeAllocated) {
             workoutExercises.push(randomExercise);
         }
     }
-    const skillLevel = Math.round(workoutExercises.reduce((acc: number, exercise: IExercise) => acc + getEnumValue({key:exercise.skillLevel,enumType:SkillLevel},), 0) / workoutExercises.length);
+    const skillLevel = Math.round(workoutExercises.reduce((acc: number, exercise: IExercise) => acc + getEnumValue({key:exercise.skillLevel,enumType:SkillLevel}), 0) / workoutExercises.length);
     workout.skillLevel = getEnumValue({key:skillLevel,enumType:SkillLevel});
     workout.duration = workoutExercises.reduce((acc: number, exercise: IExercise) => acc + exercise.duration, 0);
+    workout.categories = exerciseCategories 
     // turn into set to remove duplicates
     workout.equipmentNeeded = Array.from(new Set(workoutExercises.reduce((acc: Equipment[], exercise: IExercise) => {
         if(exercise.equipmentNeeded.includes(Equipment.NONE)){

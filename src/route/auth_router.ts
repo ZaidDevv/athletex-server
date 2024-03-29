@@ -1,6 +1,7 @@
 import express from 'express';
 import { AuthController } from '../controller/auth_controller';
 import path from 'path';
+import { authenticated } from '../middleware/middleware';
 
 const AuthRouter = express.Router();
 
@@ -197,5 +198,25 @@ AuthRouter.post(`/refresh`, AuthController.refreshToken);
  */
 
 AuthRouter.post(`/logout`, AuthController.logout);
+
+
+/**
+ * @swagger
+ * /api/v1/auth/me:
+ *   get:
+ *     summary: Get the user's profile
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/Success'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *     security:
+ *       - bearerAuth: []
+ */
+AuthRouter.get(`/me`, authenticated(false), AuthController.identifyUser);
 
 export default AuthRouter;

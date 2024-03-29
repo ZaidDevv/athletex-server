@@ -41,10 +41,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cookieParser());
 
 // Use CORS
-app.use(cors({
-    origin: HOST, // replace with your client's domain
-    credentials: true
-}));
+// app.use(cors({
+//     origin: HOST, // replace with your client's domain
+//     credentials: true
+// }));
 
 // Routes
 app.use(router);

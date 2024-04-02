@@ -162,14 +162,19 @@
         .then(response => response.json())
         .then(response => {
             var errorMessageDiv = document.getElementById('error-message');
+            // set token to http only cookie that will be handled in express like req.cookies.token
+            if (response.status === 'success' && response.data.user.isAdmin === true) {
+                document.cookie = `token=${response.data.token}; path=/; max-age=86400; samesite=strict; secure=true; httponly=true`;
+            }
+            
             if (response.status === 'success' && response.data.user.isAdmin === true) {
                 window.location.href = '/dashboard';
             } else if(response.status === 'success' && response.data.user.isAdmin === false) {
                 errorMessageDiv.style.opacity = '1'; // Make it visible
-                errorMessageDiv.textContent = data.message ?? 'You do not have permission to access this page';
+                errorMessageDiv.textContent = response.data.message ?? 'You do not have permission to access this page';
             } else {
                 errorMessageDiv.style.opacity = '1'; // Make it visible
-                errorMessageDiv.textContent = data.message ?? 'You do not have permission to access this page';
+                errorMessageDiv.textContent = response.data.message ?? 'You do not have permission to access this page';
             }
             setTimeout(function() {
                         errorMessageDiv.style.opacity = '0'; // Make it invisible

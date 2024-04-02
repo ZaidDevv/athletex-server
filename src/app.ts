@@ -12,7 +12,6 @@ import { HOST, PORT } from "./settings";
 import { IResponseSchema, ResponseStatus } from "./enums/common";
 import path from 'path';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 
 dotenv.config();
 

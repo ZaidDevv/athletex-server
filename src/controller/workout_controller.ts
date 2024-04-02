@@ -129,6 +129,8 @@ async function produceWorkout(timeAllocated: number, exerciseCategories: Exercis
     let workoutDuration: number = 0;
     let workoutExercises: IExercise[] = [];
 
+    try {
+
     while (workoutDuration < timeAllocated) {
         const randomIndex = Math.floor(Math.random() * filteredExercises.length);
         const randomExercise = filteredExercises[randomIndex];
@@ -160,6 +162,11 @@ async function produceWorkout(timeAllocated: number, exerciseCategories: Exercis
     
     workout.exercises = workoutExercises;
     return workout;
+}
+    catch(e){
+        console.log(e);
+        throw new Error("Error generating workout");
+    }
 }
 
 

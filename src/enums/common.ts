@@ -75,7 +75,6 @@ export function isValidKey({ key, enumType }: { key: any; enumType: any }): bool
 }
 
 export function getEnumValue({ key, enumType }: { key: any; enumType: any }): any {
-    console.log(key, enumType);
     return enumType[key as keyof typeof enumType];
 }
 export function getEnumKey({ value, enumType }: { value: any; enumType: any }): any {

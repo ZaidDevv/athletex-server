@@ -57,7 +57,7 @@ export class AuthController {
                 data: { "_id": user._id,'username': user.username, "isAdmin": user.isAdmin,'email': user.email, 'isRefreshToken': false}
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
 
-            const refreshToken: string = jwt.sign({ "_id": user._id, data: { 'username': user.username, "isAdmin": user.isAdmin, 'email': user.email, 'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
+            const refreshToken: string = jwt.sign({ data: { "_id": user._id,'username': user.username, "isAdmin": user.isAdmin, 'email': user.email, 'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 
             response = {
                 status: ResponseStatus.SUCCESS,
@@ -119,7 +119,7 @@ export class AuthController {
                 data: {  "_id": user._id, 'username': req.body.username, "isAdmin": false,'email': req.body.email,'isRefreshToken': false }
             }, JWT_SECRET, { expiresIn: JWT_ACCESS_EXPIRATION });
 
-            const refreshToken: string = jwt.sign({  "_id": user._id, data: { 'username': req.body.username,"isAdmin": false, 'email': req.body.email,'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
+            const refreshToken: string = jwt.sign({data: { "_id": user._id,'username': req.body.username,"isAdmin": false, 'email': req.body.email,'isRefreshToken': true } }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 
             response = {
                 status: ResponseStatus.SUCCESS,
@@ -231,10 +231,10 @@ export class AuthController {
     static async identifyUser(req: Request, res: Response) {
         let response: IResponseSchema;
 
-        if(req.cookies.user){
+        if(req.cookies.session){
             response = {
                 status: ResponseStatus.SUCCESS,
-                data: req.cookies.user
+                data: req.cookies.session.data
             } as IResponseSchema;
             return res.status(200).json(response);
         }

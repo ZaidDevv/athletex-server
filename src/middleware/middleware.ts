@@ -46,8 +46,8 @@ export const authenticated = (requireAdmin: boolean = false) => (req: Request, r
                 res.status(403).json(response);
                 return ;
             }
-            // store the user in the request object
-            req.cookies.user = verified.data;        
+            req.cookies.session = verified.data;  
+            // store the user in the request object      
             next();
         }
         catch (e) {

@@ -19,7 +19,7 @@ export class WorkoutController {
         }
         try{
             var workout = await produceWorkout(timeAllocated, exerciseCategories, equipmentNeeded);
-            workout.user = req.cookies.user._id;
+            workout.user = req.cookies.session._id;
             const newWorkout = await Workout.create(workout);
 
             if(req.query.expand && req.query.expand === '1'){
@@ -29,6 +29,7 @@ export class WorkoutController {
             return;
         } catch (e) {
             const error = e as Error;
+            console.log(error);
             if(error.message === "No exercises found for the given categories"){
                 res.status(404).json({ status: ResponseStatus.ERROR, message: error.message } as IResponseSchema);
             }
@@ -76,8 +77,8 @@ export class WorkoutController {
 
     static getLastestUserWorkout = async (req: Request, res: Response) => {
         try {
-            console.log(req.cookies.user)
-            const workout = await Workout.findOne({ user: req.cookies.user._id }).sort({ createdAt: -1 });
+            console.log(req.cookies)
+            const workout = await Workout.findOne({ user: req.cookies.session._id }).sort({ createdAt: -1 });
             if (!workout) { 
                 res.status(404).json({ status: ResponseStatus.ERROR, message: "Workout not found" } as IResponseSchema);
                 return;
